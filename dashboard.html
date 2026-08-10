@@ -339,7 +339,7 @@
                 <td class="fw-semibold">${item.namaKegiatan}</td>
                 <td class="text-center"><span class="${badgeKewenangan}">${item.kewenangan || '-'}</span></td>
                 <td class="text-end">${formatRupiah(pAwal)}</td>
-                <td class="text-end fw-semibold ${tahunPilihan === '2026' ? 'text-danger' : ''}">${formatRupiah(pRevisiTampil)}</td>
+                <td class="text-end fw-semibold" style="color: ${pRevisiTampil < 0 ? '#dc3545' : '#000000'};">${formatRupiah(pRevisiTampil)}</td>
                 <td class="text-end text-primary">${formatRupiah(pTahunan)}</td>
                 <td class="text-end text-success fw-semibold">${formatRupiah(realRp)}</td>
                 <td class="text-center fw-bold">${formatPersen(item.realisasiPersen)}</td>
