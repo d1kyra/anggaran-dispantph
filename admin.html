@@ -1,0 +1,3258 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <script>window.location.replace("admin.php");</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Panel Administrator - SISFOR Anggaran DISPANTPH</title>
+
+    <!-- Favicon / Tab Icon -->
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="alternate icon" type="image/png" href="logo.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Style System -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .touch-scroll {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ========================================================================
+         GLOBAL STICKY NAVBAR (PANEL ADMINISTRATOR)
+         ======================================================================== -->
+    <nav class="navbar navbar-dark navbar-admin sticky-top">
+        <div class="container px-3 px-md-4 d-flex align-items-center justify-content-between">
+            <a href="admin.html" class="navbar-brand d-flex align-items-center gap-2">
+                <div class="brand-badge-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="fa-solid fa-user-shield text-dark"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="d-none d-sm-inline fw-bold text-white">Sistem Informasi Anggaran DISPANTPH</span>
+                    <span class="d-inline d-sm-none fw-bold text-white">SISFOR DISPANTPH</span>
+                    <span class="admin-badge-pill" style="width: fit-content;">
+                        <i class="fa-solid fa-shield-halved"></i> PANEL ADMINISTRATOR
+                    </span>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="#welcome-section" class="nav-pill-link">
+                    <i class="fa-solid fa-house"></i>
+                    <span class="d-none d-md-inline">Beranda</span>
+                </a>
+                <a href="#dashboard-section" class="nav-pill-link active-pill-apbd" id="navPillAPBD"
+                    onclick="showTabAPBD()">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>APBD</span>
+                </a>
+                <a href="#dashboard-section" class="nav-pill-link" id="navPillAPBN" onclick="showTabAPBN()">
+                    <i class="fa-solid fa-landmark"></i>
+                    <span>APBN</span>
+                </a>
+                <!-- Link to Public View -->
+
+                <a href="index.html" target="_blank" class="btn-public-preview"
+                    title="Buka website tampilan publik di tab baru">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span class="d-none d-lg-inline">Lihat Web Publik</span>
+                </a>
+                <!-- Admin Logout Button -->
+                <button type="button"
+                    class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                    onclick="logoutAdmin()" title="Keluar dari mode Administrator">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="d-none d-sm-inline">Keluar</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================================================
+         BAGIAN 1: HERO / SELAMAT DATANG (IMMERSION SHOWCASE)
+         ======================================================================== -->
+    <section id="welcome-section" class="welcome-hero">
+        <!-- Background Ambient Orbs -->
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+        <div class="bg-pattern"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fa-solid fa-leaf"></i> DINAS PANGAN, TANAMAN PANGAN & HORTIKULTURA PROV. KALTIM
+            </div>
+
+            <h1 class="hero-title">
+                Selamat Datang di <br>
+                <span class="highlight-text">Sistem Informasi Anggaran</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Portal monitoring, transparansi, dan rekapitulasi realisasi anggaran multiyears (2022 - 2026) APBD &
+                APBN pada Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur.
+            </p>
+
+            <!-- 4 Features Highlight Cards Grid -->
+            <div class="hero-features-grid">
+                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+                    <div class="hero-card-icon">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div>
+                        <h6 class="hero-card-title">Tanaman Pangan</h6>
+                        <p class="hero-card-desc">Monitoring alokasi dan realisasi program komoditas pangan daerah.</p>
+                    </div>
+                </a>
+
+                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+                    <div class="hero-card-icon">
+                        <i class="fa-solid fa-apple-whole"></i>
+                    </div>
+                    <div>
+                        <h6 class="hero-card-title">Hortikultura</h6>
+                        <p class="hero-card-desc">Pengawalan anggaran dan capaian komoditas hortikultura unggulan.</p>
+                    </div>
+                </a>
+
+                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+                    <div class="hero-card-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <h6 class="hero-card-title">APBD Multiyears</h6>
+                        <p class="hero-card-desc">Rekapitulasi terpadu pagu, revisi, realisasi, dan sisa anggaran
+                            2022-2026.</p>
+                    </div>
+                </a>
+
+                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBN()">
+                    <div class="hero-card-icon">
+                        <i class="fa-solid fa-table-list"></i>
+                    </div>
+                    <div>
+                        <h6 class="hero-card-title">Realisasi APBN</h6>
+                        <p class="hero-card-desc">Evaluasi kinerja keuangan dan fisik satker per tahun anggaran.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Floating Scroll Indicator -->
+            <div>
+                <a href="#dashboard-section" class="hero-scroll-prompt">
+                    <span>Gulir ke Bawah untuk Melihat Data</span>
+                    <div class="scroll-mouse-icon">
+                        <div class="scroll-wheel"></div>
+                    </div>
+                    <i class="fa-solid fa-chevron-down animated-bounce"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Wave Curve Transition Divider -->
+        <div class="hero-wave-divider">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0 C150,90 350,-40 500,45 C650,130 900,10 1200,50 L1200,120 L0,120 Z" class="shape-fill">
+                </path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         BAGIAN 2: DASHBOARD MONITORING ANGGARAN
+         ======================================================================== -->
+    <section id="dashboard-section" class="dashboard-section">
+        <div class="container px-3 px-md-4 pb-5">
+
+            <!-- Notice Strip Panel Administrator -->
+            <div class="admin-notice-strip">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-user-gear fa-lg text-warning"></i>
+                    <span><strong>Panel Pengelolaan Administrator:</strong> Anda memiliki hak akses penuh untuk
+                        menambah, mengedit, dan menghapus data anggaran APBD & APBN, serta mengatur periode
+                        pelaporan.</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success bg-opacity-25 text-success fw-bold px-2 py-1"><i
+                            class="fa-solid fa-circle-check me-1"></i> Mode Kelola Aktif</span>
+                </div>
+            </div>
+
+            <!-- Header Banner & Toggle -->
+            <div
+                class="header-banner d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h3 class="page-title">Monitoring Anggaran 2022 - 2026</h3>
+                    <p class="page-subtitle">Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur
+                    </p>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <!-- Dynamic Period Selector Pill -->
+                    <div class="periode-badge-pill" id="btnUbahPeriode" onclick="openUbahPeriodeModal()"
+                        title="Klik untuk mengubah periode bulan laporan realisasi (Admin)">
+                        <i class="fa-regular fa-calendar-check text-success"></i>
+                        <span>Periode:</span>
+                        <strong id="labelPeriodeAktif">s.d Juni</strong>
+                        <i class="fa-solid fa-pen-to-square ms-1 small text-secondary"></i>
+                    </div>
+
+                    <!-- APBD / APBN Switcher -->
+                    <div class="toggle-container">
+                        <button id="btnAPBD" class="btn btn-toggle-source active-apbd" onclick="showTabAPBD()">
+                            <i class="fa-solid fa-building-columns me-1 me-md-2"></i> APBD
+                        </button>
+                        <button id="btnAPBN" class="btn btn-toggle-source inactive" onclick="showTabAPBN()">
+                            <i class="fa-solid fa-landmark me-1 me-md-2"></i> APBN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & CRUD Action Toolbar -->
+            <div
+                class="d-flex flex-wrap justify-content-between align-items-center mb-3 px-1 gap-2 filter-container-mobile">
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="fw-bold text-dark m-0" id="mainTitle" style="font-size: clamp(1rem, 3vw, 1.2rem);">
+                        <i class="fa-solid fa-list-check text-success me-2"></i> Daftar Unit Kerja / Kegiatan APBD
+                    </h5>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25"
+                        id="dataCountBadge">0 Data</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <!-- Live Search Box -->
+                    <div class="search-box-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="searchInput" class="form-control form-control-sm search-input"
+                            placeholder="Cari unit kerja / kegiatan..." oninput="handleSearch()">
+                        <button class="btn-clear-search d-none" id="btnClearSearch" onclick="clearSearch()"
+                            title="Hapus pencarian">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- APBN Year Filter Dropdown -->
+                    <div id="filterTahunAPBN" class="d-none align-items-center gap-2">
+                        <label class="fw-bold small text-secondary m-0">Tahun:</label>
+                        <select id="tahunApbn" class="form-select form-select-sm filter-select w-auto">
+                            <option value="2026" selected>2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                        </select>
+                    </div>
+
+                    <!-- CRUD Action Buttons -->
+                    <button class="btn-crud-add" id="btnTambahData" onclick="openCreateModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span id="btnTambahText">Tambah Unit APBD</span>
+                    </button>
+
+                    <button class="btn-crud-reset" onclick="resetDataToDefault()"
+                        title="Kembalikan semua data ke setelan bawaan sistem">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset Data</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 1: KARTU APBD -->
+            <div class="row g-3 mb-4" id="menuContainer"></div>
+
+            <!-- TAMPILAN 2: KARTU APBN (REDESIGN: MIRIP APBD) -->
+            <div class="row g-3 mb-4 d-none" id="apbnCardContainer"></div>
+
+            <!-- Empty Search State -->
+            <div id="emptySearchState" class="text-center py-5 d-none">
+                <div class="text-muted mb-2">
+                    <i class="fa-solid fa-magnifying-glass fa-2x text-secondary opacity-50"></i>
+                </div>
+                <h6 class="fw-bold text-secondary">Data tidak ditemukan</h6>
+                <p class="small text-muted mb-0">Coba ubah kata kunci pencarian Anda atau tambah data baru.</p>
+            </div>
+
+            <!-- Dashboard Footer -->
+            <div class="dashboard-footer">
+                &copy; 2026 Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         MODAL 1: MATRIKS MULTIYEARS (APBD FOLDER VIEW)
+         ======================================================================== -->
+    <div class="modal fade" id="matrixModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div
+                    class="modal-header modal-header-custom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold m-0 text-white" id="modalTitle"
+                        style="font-size: clamp(1rem, 3vw, 1.25rem);">
+                        Matriks Multiyears</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold" id="btnEditFromMatrix"
+                            onclick="editCurrentUnitFromMatrix()">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data di Dalam Folder
+                        </button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="small text-muted">
+                            <i class="fa-solid fa-info-circle text-success me-1"></i>
+                            Menampilkan rincian alokasi dan realisasi anggaran multiyears.
+                        </div>
+                        <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2"
+                            id="matrixPeriodeBadge">
+                            Periode Realisasi: <strong id="matrixPeriodeLabel">s.d Juni</strong>
+                        </div>
+                    </div>
+                    <div class="table-responsive touch-scroll">
+                        <table
+                            class="table table-bordered table-striped align-middle mb-0 text-center modal-matrix-table">
+                            <thead class="table-dark small text-uppercase" id="matrixTableHead">
+                                <tr>
+                                    <th style="width: 25%; min-width: 170px;">Komponen Anggaran <span
+                                            style="text-transform: none;">(Rp)</span></th>
+                                    <th>2022</th>
+                                    <th>2023</th>
+                                    <th>2024</th>
+                                    <th>2025</th>
+                                    <th id="thMatrix2026">2026 <span style="text-transform: none !important;">(<span style="text-transform: lowercase !important; font-weight: 700;">s.d</span> Juni)</span></th>
+                                    <th class="bg-success text-white">JUMLAH</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrixTableBody" class="small"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- ====================================================
+                         VISUALISASI GRAFIK PADA BAGIAN BAWAH TABEL
+                         ==================================================== -->
+                    <div class="matrix-charts-container mt-4 pt-3 border-top">
+                        <!-- Header & Switcher Toolbar -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-chart-column text-success fs-5"></i>
+                                    <span>Grafik Perkembangan Anggaran Multiyears</span>
+                                </h6>
+                                <small class="text-muted">Perbandingan alokasi pagu tahunan, realisasi keuangan, dan
+                                    tren capaian</small>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn btn-sm btn-success active btn-chart-tab px-3"
+                                    id="tabChartAll" style="cursor: default;">
+                                    <i class="fa-solid fa-chart-column me-1"></i> Grafik
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- KPI Summary Quick Chips -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-wallet text-primary me-1"></i> Total Pagu (5 Thn):</span>
+                                    <span class="fw-bold text-dark small" id="kpiChartTotalPagu">Rp 0</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-circle-check text-success me-1"></i> Total Realisasi (5
+                                        Thn):</span>
+                                    <span class="fw-bold text-success small" id="kpiChartTotalReal">Rp 0</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu (5
+                                        Thn):</span>
+                                    <span class="fw-bold text-warning-emphasis small" id="kpiChartTotalSisa">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dual Chart Canvas Cards -->
+                        <div class="row g-3">
+                            <!-- Chart 1: Nominal Rp (Bar Chart) -->
+                            <div class="col-12 col-lg-7" id="chartColNominal">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white chart-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold small text-secondary">
+                                            <i class="fa-solid fa-chart-bar text-primary me-1"></i> Alokasi Pagu vs
+                                            Realisasi (Nominal Rp)
+                                        </span>
+                                        <span class="badge bg-light text-muted border small">Per Tahun</span>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="matrixChartNominalCanvas"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Persentase % (Line Chart) -->
+                            <div class="col-12 col-lg-5" id="chartColPercent">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white chart-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold small text-secondary">
+                                            <i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Tren Capaian
+                                            (%) Keuangan & Fisik
+                                        </span>
+                                        <span class="badge bg-light text-muted border small">0 - 100%</span>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="matrixChartPercentCanvas"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL APBN MATRIX MULTIYEARS (DENGAN DK/TP)
+         ======================================================================== -->
+    <div class="modal fade" id="apbnMatrixModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg">
+                <div
+                    class="modal-header modal-header-custom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold m-0 text-white" id="apbnMatrixTitle"
+                        style="font-size: clamp(1rem, 3vw, 1.25rem);">
+                        <i class="fa-solid fa-folder-open text-warning me-2"></i> Matriks APBN Multiyears
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light text-white fw-bold"
+                            id="btnAddFromAPBNMatrix" onclick="openAddSpecificAPBN('', '', currentViewingAPBNKey)"
+                            title="Tambah Entri Data Baru ke Kegiatan ini">
+                            <i class="fa-solid fa-plus me-1"></i> Tambah Data
+                        </button>
+                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold"
+                            id="btnEditFromAPBNMatrix" onclick="editCurrentAPBNFromMatrix()">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data
+                        </button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="small text-muted">
+                            <i class="fa-solid fa-circle-info text-success me-1"></i>
+                            Rincian alokasi dan realisasi anggaran APBN multiyears per kewenangan (DK/TP). Anda dapat
+                            mengedit atau menghapus data spesifik per tahun dan kewenangan.
+                        </div>
+                        <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2"
+                            id="apbnMatrixPeriodeBadge">
+                            Periode Realisasi: <strong id="apbnMatrixPeriodeLabel">s.d Juni</strong>
+                        </div>
+                    </div>
+                    <div class="table-responsive touch-scroll mb-3">
+                        <table
+                            class="table table-bordered table-striped align-middle mb-0 text-center modal-matrix-table">
+                            <thead class="table-dark small text-uppercase" id="apbnMatrixTableHead"></thead>
+                            <tbody id="apbnMatrixTableBody" class="small"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- KELOLA RINCIAN ENTRI DATA KEGIATAN (ADMIN) -->
+                    <div class="card border-0 shadow-sm rounded-3 my-3 bg-light overflow-hidden"
+                        id="apbnEntriesManagementSection">
+                        <div
+                            class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark d-flex align-items-center gap-2"
+                                    style="font-size: 0.95rem;">
+                                    <i class="fa-solid fa-list-check text-success"></i>
+                                    <span>Kelola Rincian Entri Data Kegiatan</span>
+                                </h6>
+                                <small class="text-muted" style="font-size: 0.78rem;">Hapus atau edit data spesifik per
+                                    tahun dan kewenangan tanpa menghapus kegiatan secara keseluruhan</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-success fw-bold px-3"
+                                onclick="openAddSpecificAPBN('', '', currentViewingAPBNKey)">
+                                <i class="fa-solid fa-plus me-1"></i> Tambah Data Tahun/Kewenangan
+                            </button>
+                        </div>
+                        <div class="table-responsive touch-scroll">
+                            <table class="table table-hover table-bordered align-middle text-center mb-0 bg-white"
+                                style="font-size: 0.82rem;">
+                                <thead class="table-light small fw-bold text-uppercase text-secondary">
+                                    <tr>
+                                        <th style="width: 45px;">No</th>
+                                        <th style="width: 75px;">Tahun</th>
+                                        <th>Kode Satker</th>
+                                        <th style="width: 85px;">Kewenangan</th>
+                                        <th class="text-end">Pagu Tahunan</th>
+                                        <th class="text-end">Realisasi (Rp)</th>
+                                        <th style="width: 80px;">Keu (%)</th>
+                                        <th style="width: 80px;">Fisik (%)</th>
+                                        <th class="text-end">Sisa Anggaran</th>
+                                        <th style="width: 140px;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="apbnEntriesTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- VISUALISASI GRAFIK APBN -->
+                    <div class="matrix-charts-container mt-4 pt-3 border-top">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-chart-column text-success fs-5"></i>
+                                    <span>Grafik Perkembangan Anggaran APBN Multiyears</span>
+                                </h6>
+                                <small class="text-muted">Perbandingan alokasi pagu, realisasi keuangan, dan tren
+                                    capaian</small>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-success active btn-chart-tab px-3"
+                                    style="cursor: default;">
+                                    <i class="fa-solid fa-chart-column me-1"></i> Grafik
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-wallet text-success me-1"></i> Total Pagu:</span>
+                                    <span class="fw-bold text-dark small" id="apbnKpiTotalPagu">Rp 0</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-circle-check text-success me-1"></i> Total
+                                        Realisasi:</span>
+                                    <span class="fw-bold text-success small" id="apbnKpiTotalReal">Rp 0</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="kpi-chip">
+                                    <span class="small text-muted fw-semibold"><i
+                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu:</span>
+                                    <span class="fw-bold text-warning-emphasis small" id="apbnKpiTotalSisa">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-7">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white chart-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold small text-secondary">
+                                            <i class="fa-solid fa-chart-bar text-success me-1"></i> Pagu vs Realisasi
+                                            (Nominal Rp)
+                                        </span>
+                                        <span class="badge bg-light text-muted border small">Per Tahun</span>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="apbnChartNominalCanvas"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-5">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white chart-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold small text-secondary">
+                                            <i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Capaian (%)
+                                            Keuangan & Fisik
+                                        </span>
+                                        <span class="badge bg-light text-muted border small">0 - 100%</span>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="apbnChartPercentCanvas"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL 2: FORM CRUD APBN (TAMBAH / EDIT KEGIATAN)
+         ======================================================================== -->
+    <div class="modal fade" id="modalFormAPBN" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header modal-header-apbn py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold m-0 text-white" id="modalAPBNTitle">
+                        <i class="fa-solid fa-landmark me-2"></i> Tambah Kegiatan APBN
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="formAPBN" onsubmit="saveDataAPBN(event)">
+                    <input type="hidden" id="apbnEditIndex" value="-1">
+                    <input type="hidden" id="apbnEditDbId" value="-1">
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary">Tahun Anggaran</label>
+                                <select id="apbnFormTahun" class="form-select form-select-sm fw-bold" required>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary">Kode Satker</label>
+                                <input type="text" id="apbnFormSatker" class="form-control form-control-sm"
+                                    placeholder="Contoh: 018.03.169073" required>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary">Kewenangan</label>
+                                <select id="apbnFormKewenangan" class="form-select form-select-sm fw-bold" required>
+                                    <option value="DK">DK (Dekonsentrasi)</option>
+                                    <option value="TP">TP (Tugas Pembantuan)</option>
+                                    <option value="BKP">BKP (Ketahanan Pangan)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary"><i class="fa-regular fa-calendar-check text-success me-1"></i> Periode Realisasi (Bulan)</label>
+                                <select id="apbnFormPeriodeSelect" class="form-select form-select-sm text-success fw-bold" onchange="handlePeriodeSelectChange('APBN')">
+                                    <option value="s.d Januari">s.d Januari</option>
+                                    <option value="s.d Februari">s.d Februari</option>
+                                    <option value="s.d Maret">s.d Maret</option>
+                                    <option value="s.d April">s.d April</option>
+                                    <option value="s.d Mei">s.d Mei</option>
+                                    <option value="s.d Juni">s.d Juni</option>
+                                    <option value="s.d Juli">s.d Juli</option>
+                                    <option value="s.d Agustus">s.d Agustus</option>
+                                    <option value="s.d September">s.d September</option>
+                                    <option value="s.d Oktober">s.d Oktober</option>
+                                    <option value="s.d November">s.d November</option>
+                                    <option value="s.d Desember">s.d Desember</option>
+                                    <option value="custom">-- Kustom / Lainnya --</option>
+                                </select>
+                                <input type="text" id="apbnFormPeriodeCustom" class="form-control form-control-sm mt-1 d-none" placeholder="Contoh: s.d Triwulan III..." oninput="handlePeriodeCustomInput('APBN')">
+                                <input type="hidden" id="apbnFormPeriodeText" value="s.d Juni">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-secondary">Nama Kegiatan</label>
+                                <textarea id="apbnFormNama" class="form-control form-control-sm" rows="2"
+                                    placeholder="Nama program atau kegiatan..." required></textarea>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-secondary">Pagu Awal (Rp)</label>
+                                <input type="number" id="apbnFormPaguAwal" class="form-control form-control-sm text-end"
+                                    placeholder="0" min="0" required>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-secondary">Pagu Revisi (Rp) <small
+                                        class="text-muted">(Boleh minus)</small></label>
+                                <input type="number" id="apbnFormPaguRevisi"
+                                    class="form-control form-control-sm text-end" placeholder="0" value="0">
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-secondary">Realisasi Keuangan (Rp)</label>
+                                <input type="number" id="apbnFormRealisasiRp"
+                                    class="form-control form-control-sm text-end" placeholder="0" min="0" required>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-secondary">Realisasi Fisik (%)</label>
+                                <input type="number" step="0.01" id="apbnFormRealisasiFisik"
+                                    class="form-control form-control-sm text-end" placeholder="0 - 100" min="0"
+                                    max="100" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light px-4 py-3">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-sm btn-primary px-4 fw-bold">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data APBN
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL 3: FORM CRUD APBD KOMPREHENSIF (EDIT SELURUH DATA MULTIYEARS DI DALAM FOLDER)
+         ======================================================================== -->
+    <div class="modal fade" id="modalFormAPBD" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div
+                    class="modal-header modal-header-custom py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold m-0 text-white" id="modalAPBDTitle">
+                        <i class="fa-solid fa-folder-open me-2 text-warning"></i> Edit Data Unit Kerja & Multiyears
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="formAPBD" onsubmit="saveDataAPBD(event)">
+                    <input type="hidden" id="apbdEditKey" value="">
+                    <div class="modal-body p-4">
+                        <!-- Informasi Utama Unit -->
+                        <div class="row g-3 mb-3 p-3 bg-light rounded-3 border">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary">Kode Unit</label>
+                                <input type="text" id="apbdFormKey" class="form-control form-control-sm fw-bold"
+                                    placeholder="Contoh: 1 / 10 / UPTD-1" required>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-secondary">Nama Unit Kerja / Bidang</label>
+                                <input type="text" id="apbdFormNama" class="form-control form-control-sm fw-semibold"
+                                    placeholder="Nama Bidang / UPTD..." required>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-secondary"><i class="fa-regular fa-calendar-check text-success me-1"></i> Periode Realisasi (Bulan)</label>
+                                <select id="apbdFormPeriodeSelect" class="form-select form-select-sm text-success fw-bold" onchange="handlePeriodeSelectChange('APBD')">
+                                    <option value="s.d Januari">s.d Januari</option>
+                                    <option value="s.d Februari">s.d Februari</option>
+                                    <option value="s.d Maret">s.d Maret</option>
+                                    <option value="s.d April">s.d April</option>
+                                    <option value="s.d Mei">s.d Mei</option>
+                                    <option value="s.d Juni">s.d Juni</option>
+                                    <option value="s.d Juli">s.d Juli</option>
+                                    <option value="s.d Agustus">s.d Agustus</option>
+                                    <option value="s.d September">s.d September</option>
+                                    <option value="s.d Oktober">s.d Oktober</option>
+                                    <option value="s.d November">s.d November</option>
+                                    <option value="s.d Desember">s.d Desember</option>
+                                    <option value="custom">-- Kustom / Lainnya --</option>
+                                </select>
+                                <input type="text" id="apbdFormPeriodeCustom" class="form-control form-control-sm mt-1 d-none" placeholder="Contoh: s.d Triwulan III..." oninput="handlePeriodeCustomInput('APBD')">
+                                <input type="hidden" id="apbdFormPeriodeText" value="s.d Juni">
+                            </div>
+                        </div>
+
+                        <!-- Nav Tabs Pemilihan Tahun Anggaran Multiyears -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-1 flex-wrap" id="yearTabsNav">
+                                <!-- Tabs injected via JavaScript -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="addNewYearTab()"
+                                title="Tambah tahun anggaran baru (misal: 2027)">
+                                <i class="fa-solid fa-plus me-1"></i> Tambah Tahun
+                            </button>
+                        </div>
+
+                        <!-- Card Editor Anggaran per Tahun -->
+                        <div class="matrix-editor-card mb-3" id="yearFormContainer">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold text-success m-0" id="currentActiveYearLabel">
+                                    <i class="fa-solid fa-calendar-days me-2"></i> Input Anggaran Tahun 2026
+                                </h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-xs btn-outline-danger py-1 px-2"
+                                        style="font-size: 0.75rem;" onclick="resetCurrentYearDataAPBD()"
+                                        title="Kosongkan data untuk tahun yang sedang dipilih">
+                                        <i class="fa-solid fa-trash-can me-1"></i> Kosongkan Tahun Ini
+                                    </button>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary small"
+                                        id="yearStatusBadge">Tahun Berjalan</span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Pagu Awal (Rp)</label>
+                                    <input type="number" id="fieldPaguAwal"
+                                        class="form-control form-control-sm text-end fw-semibold" placeholder="0"
+                                        min="0" oninput="handleYearValueChange()">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Pagu Penambahan / Efisiensi
+                                        (Rp) <small class="text-muted">(Boleh -)</small></label>
+                                    <input type="number" id="fieldPaguEfisiensi"
+                                        class="form-control form-control-sm text-end fw-semibold" placeholder="0"
+                                        oninput="handleYearValueChange()">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Pagu Tahunan / APBD
+                                        (Rp)</label>
+                                    <input type="number" id="fieldPaguApbd"
+                                        class="form-control form-control-sm text-end text-primary fw-bold"
+                                        placeholder="0" min="0" oninput="handleYearValueChange()">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">Realisasi Keuangan
+                                        (Rp)</label>
+                                    <input type="number" id="fieldRealisasiKeuangan"
+                                        class="form-control form-control-sm text-end text-success fw-bold"
+                                        placeholder="0" min="0" oninput="handleYearValueChange()">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">Realisasi Fisik (%)</label>
+                                    <input type="number" step="0.01" id="fieldRealisasiFisik"
+                                        class="form-control form-control-sm text-end fw-bold" placeholder="0 - 100"
+                                        min="0" max="100" oninput="handleYearValueChange()">
+                                </div>
+                            </div>
+
+                            <!-- Live Auto Calculations Preview Box -->
+                            <div class="row g-2 mt-3 pt-3 border-top">
+                                <div class="col-12 col-md-4">
+                                    <div class="matrix-calc-badge d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted fw-semibold">Sisa Anggaran:</span>
+                                        <strong class="text-dark" id="previewSisaAnggaran">Rp 0</strong>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="matrix-calc-badge d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted fw-semibold">% Keuangan:</span>
+                                        <strong class="text-success" id="previewPersenKeuangan">0%</strong>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="matrix-calc-badge d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted fw-semibold">% Fisik:</span>
+                                        <strong class="text-primary" id="previewPersenFisik">0%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer bg-light px-4 py-3 d-flex justify-content-between align-items-center">
+                        <span class="small text-muted">
+                            <i class="fa-solid fa-shield-halved text-success me-1"></i> Mode Admin Aktif
+                        </span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-sm btn-success px-4 fw-bold shadow-sm">
+                                <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Seluruh Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL 4: LOGIN ADMINISTRATOR
+         ======================================================================== -->
+    <div class="modal fade" id="modalLoginAdmin" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div
+                    class="modal-header modal-header-admin py-3 px-3 d-flex justify-content-between align-items-center">
+                    <h6 class="modal-title fw-bold m-0 text-white">
+                        <i class="fa-solid fa-user-shield me-2"></i> Akses Administrator
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formLoginAdmin" onsubmit="handleAdminLogin(event)">
+                    <div class="modal-body p-3">
+                        <div class="alert alert-info py-2 px-3 small mb-3 border-0 bg-info bg-opacity-10 text-dark">
+                            <i class="fa-solid fa-circle-info text-info me-1"></i> Masuk sebagai Admin untuk mengedit
+                            data di dalam folder & sistem.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Username</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-user text-muted"></i></span>
+                                <input type="text" id="adminUsername" class="form-control" placeholder="admin" required
+                                    autocomplete="username">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold text-secondary">Password</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-key text-muted"></i></span>
+                                <input type="password" id="adminPassword" class="form-control" placeholder="•••"
+                                    required autocomplete="current-password">
+                            </div>
+                        </div>
+                        <div id="loginErrorMsg" class="text-danger small fw-bold mt-2 d-none">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i> Username atau password salah!
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light px-3 py-2">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-sm btn-primary px-3 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL 5: UBAH PERIODE BULAN REALISASI
+         ======================================================================== -->
+    <div class="modal fade" id="modalUbahPeriode" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div
+                    class="modal-header modal-header-custom py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold m-0 text-white" id="modalUbahPeriodeTitle">
+                        <i class="fa-regular fa-calendar-check me-2"></i> Ubah Periode Bulan Realisasi
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formUbahPeriode" onsubmit="savePeriodeAktif(event)">
+                    <div class="modal-body p-4">
+                        <p class="small text-muted mb-3" id="modalUbahPeriodeDesc">
+                            Sesuaikan periode laporan realisasi tahun berjalan (misalnya saat waktu berlanjut ke bulan
+                            Juli, Agustus, September, Desember, dsb.).
+                        </p>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Pilih Bulan / Periode</label>
+                            <select id="selectPeriodeBulan" class="form-select form-select-sm fw-bold"
+                                onchange="handlePeriodePresetChange()">
+                                <option value="s.d Januari">s.d Januari</option>
+                                <option value="s.d Februari">s.d Februari</option>
+                                <option value="s.d Maret">s.d Maret</option>
+                                <option value="s.d April">s.d April</option>
+                                <option value="s.d Mei">s.d Mei</option>
+                                <option value="s.d Juni">s.d Juni</option>
+                                <option value="s.d Juli">s.d Juli</option>
+                                <option value="s.d Agustus">s.d Agustus</option>
+                                <option value="s.d September">s.d September</option>
+                                <option value="s.d Oktober">s.d Oktober</option>
+                                <option value="s.d November">s.d November</option>
+                                <option value="s.d Desember">s.d Desember (Akhir Tahun)</option>
+                                <option value="Triwulan I">Triwulan I</option>
+                                <option value="Triwulan II">Triwulan II</option>
+                                <option value="Triwulan III">Triwulan III</option>
+                                <option value="Triwulan IV">Triwulan IV</option>
+                                <option value="custom">Kustom (Ketik Sendiri)...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="customPeriodeWrapper" style="display: none;">
+                            <label class="form-label fw-bold small text-secondary">Nama Periode Kustom</label>
+                            <input type="text" id="inputCustomPeriode" class="form-control form-control-sm"
+                                placeholder="Contoh: s.d September (Revisi 2)">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light px-4 py-3">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-sm btn-success px-4 fw-bold">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Terapkan Periode
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js Engine (Offline Local + CDN Fallback) -->
+    <script src="chart.min.js"></script>
+    <script>
+        if (typeof Chart === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"><\/script>');
+        }
+    </script>
+    <script src="db/database.js"></script>
+    <script src="db/database2.js"></script>
+
+    <script>
+        const STORAGE_KEY_APBD = 'sisfor_apbd_data_v3';
+        const STORAGE_KEY_APBN = 'sisfor_apbn_data_v3';
+        const STORAGE_KEY_APBN_PERIODE = 'sisfor_apbn_custom_periods_v1';
+        const STORAGE_KEY_ADMIN = 'sisfor_admin_session_v3';
+        const STORAGE_KEY_PERIODE = 'sisfor_periode_aktif_v3';
+
+        // Panel admin utama telah dimigrasi ke admin.php dengan proteksi server-side session
+
+        let activeAPBD = {};
+        let activeAPBN = {};
+        let currentModeTitle = "APBD";
+        let searchQuery = "";
+        let currentViewingUnitKey = "";
+        let isAdmin = true;
+        let pendingAdminAction = null;
+        let periodeAktif = "s.d Juni";
+        let currentPeriodeScope = { type: 'GLOBAL', key: null };
+
+        // Chart.js Instances
+        let matrixNominalChartInstance = null;
+        let matrixPercentChartInstance = null;
+        let apbnNominalChartInstance = null;
+        let apbnPercentChartInstance = null;
+        let currentChartDisplayMode = 'all';
+
+        // APBN Grouped Data
+        let groupedAPBN = {};
+        let currentViewingAPBNKey = null;
+
+        // Auth Guard: Pastikan admin sudah login
+        if (localStorage.getItem(STORAGE_KEY_ADMIN) !== 'true') {
+            alert("Akses Terbatas! Anda harus login sebagai Administrator terlebih dahulu.");
+            window.location.href = "index.html?login=required";
+        }
+
+        // Variabel kerja saat membuka modal edit APBD multiyears
+        let tempUnitEditData = {};
+        let currentEditingYear = "2026";
+
+        // ==========================================
+        // INISIALISASI DATA & AUTH
+        // ==========================================
+        async function initData() {
+            const savedPeriode = localStorage.getItem(STORAGE_KEY_PERIODE);
+            periodeAktif = savedPeriode ? savedPeriode : "s.d Juni";
+            document.getElementById('labelPeriodeAktif').textContent = periodeAktif;
+
+            await loadDataFromServer();
+        }
+
+        async function loadDataFromServer() {
+            try {
+                const [apbdRes, apbnRes] = await Promise.all([
+                    fetch('api/get_apbd.php'),
+                    fetch('api/get_apbn.php')
+                ]);
+
+                const apbdJson = await apbdRes.json();
+                if (apbdJson.status === 'success') activeAPBD = apbdJson.data;
+
+                const apbnJson = await apbnRes.json();
+                if (apbnJson.status === 'success') activeAPBN = apbnJson.data;
+
+                groupedAPBN = transformAPBNtoGrouped();
+
+                if (currentModeTitle === "APBD") {
+                    renderMenuCards();
+                    if (currentViewingUnitKey && document.getElementById('matrixModal').classList.contains('show')) {
+                        openUnitMatrix(currentViewingUnitKey);
+                    }
+                } else {
+                    renderAPBNCards();
+                    if (currentViewingAPBNKey && document.getElementById('apbnMatrixModal').classList.contains('show')) {
+                        openAPBNMatrix(currentViewingAPBNKey);
+                    }
+                }
+            } catch (error) {
+                console.warn("Server offline, fallback to local data:", error);
+                if (typeof dataAPBD !== 'undefined') activeAPBD = JSON.parse(JSON.stringify(dataAPBD));
+                if (typeof dataAPBN !== 'undefined') activeAPBN = JSON.parse(JSON.stringify(dataAPBN));
+                groupedAPBN = transformAPBNtoGrouped();
+                if (currentModeTitle === "APBD") renderMenuCards();
+                else renderAPBNCards();
+            }
+        }
+
+        // Dummy functions (not using localStorage anymore)
+        function saveAPBD() { }
+        function saveAPBN() { }
+
+        // ==========================================
+        // ADMIN LOGOUT & GUARD
+        // ==========================================
+        function logoutAdmin() {
+            if (confirm("Apakah Anda yakin ingin keluar dari Panel Administrator?")) {
+                localStorage.removeItem(STORAGE_KEY_ADMIN);
+                window.location.href = "index.html";
+            }
+        }
+
+        function checkAdminAuth(actionCallback) {
+            if (typeof actionCallback === 'function') {
+                actionCallback();
+            }
+        }
+
+        // ==========================================
+        // PENGATURAN PERIODE BULAN REALISASI
+        // ==========================================
+        function formatPeriodeHeaderHtml(periode) {
+            if (!periode) return '';
+            let p = periode.trim();
+            p = p.replace(/s\.d\.?/gi, 's.d');
+            p = p.replace(/^s\.d\s+([A-Za-z]+)$/i, (m, bulan) => {
+                return 's.d ' + bulan.charAt(0).toUpperCase() + bulan.slice(1).toLowerCase();
+            });
+            const formatted = p.replace(/\bs\.d\b/gi, '<span style="text-transform: lowercase !important; font-weight: 700;">s.d</span>');
+            return `<span style="text-transform: none !important;">(${formatted})</span>`;
+        }
+
+        function setPeriodeSelectValue(type, val) {
+            const prefix = type.toLowerCase();
+            const sel = document.getElementById(`${prefix}FormPeriodeSelect`);
+            const customInp = document.getElementById(`${prefix}FormPeriodeCustom`);
+            const textInp = document.getElementById(`${prefix}FormPeriodeText`);
+            if (!sel) return;
+
+            const currentVal = (val || periodeAktif || 's.d Juni').trim();
+            if (textInp) textInp.value = currentVal;
+
+            let matched = false;
+            for (let i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].value.toLowerCase() === currentVal.toLowerCase()) {
+                    sel.selectedIndex = i;
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (matched) {
+                if (customInp) {
+                    customInp.value = '';
+                    customInp.classList.add('d-none');
+                }
+            } else {
+                sel.value = 'custom';
+                if (customInp) {
+                    customInp.value = currentVal;
+                    customInp.classList.remove('d-none');
+                }
+            }
+        }
+
+        function handlePeriodeSelectChange(type) {
+            const prefix = type.toLowerCase();
+            const sel = document.getElementById(`${prefix}FormPeriodeSelect`);
+            const customInp = document.getElementById(`${prefix}FormPeriodeCustom`);
+            const textInp = document.getElementById(`${prefix}FormPeriodeText`);
+            if (!sel) return;
+
+            if (sel.value === 'custom') {
+                if (customInp) {
+                    customInp.classList.remove('d-none');
+                    customInp.focus();
+                    if (textInp) textInp.value = customInp.value.trim() || 's.d Juni';
+                }
+            } else {
+                if (customInp) {
+                    customInp.classList.add('d-none');
+                }
+                if (textInp) textInp.value = sel.value;
+            }
+        }
+
+        function handlePeriodeCustomInput(type) {
+            const prefix = type.toLowerCase();
+            const customInp = document.getElementById(`${prefix}FormPeriodeCustom`);
+            const textInp = document.getElementById(`${prefix}FormPeriodeText`);
+            if (customInp && textInp) {
+                textInp.value = customInp.value.trim() || 's.d Juni';
+            }
+        }
+
+        function openUbahPeriodeModal() {
+            checkAdminAuth(() => {
+                currentPeriodeScope = { type: 'GLOBAL', key: null };
+                const modalTitle = document.getElementById('modalUbahPeriodeTitle');
+                const modalDesc = document.getElementById('modalUbahPeriodeDesc');
+                if (modalTitle) modalTitle.innerHTML = `<i class="fa-regular fa-calendar-check me-2"></i> Ubah Periode Bulan Realisasi (Global)`;
+                if (modalDesc) modalDesc.textContent = `Sesuaikan periode laporan realisasi tahun berjalan untuk seluruh data (bawaan sistem).`;
+
+                setupPeriodeModalForm(periodeAktif);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalUbahPeriode')).show();
+            });
+        }
+
+        function openUbahPeriodeForCurrentMatrix(type, key) {
+            checkAdminAuth(() => {
+                currentPeriodeScope = { type: type, key: key };
+                const modalTitle = document.getElementById('modalUbahPeriodeTitle');
+                const modalDesc = document.getElementById('modalUbahPeriodeDesc');
+                let currentVal = periodeAktif;
+                let namaEntity = "";
+
+                if (type === 'APBN') {
+                    const group = groupedAPBN[key];
+                    namaEntity = group ? group.nama : "Kegiatan APBN";
+                    currentVal = (group && group.periodeCustom) || periodeAktif;
+                } else if (type === 'APBD') {
+                    const unit = activeAPBD[key];
+                    namaEntity = unit ? unit.nama : "Unit Kerja APBD";
+                    currentVal = (unit && unit.periodeCustom) || periodeAktif;
+                }
+
+                if (modalTitle) {
+                    modalTitle.innerHTML = `<i class="fa-regular fa-calendar-check me-2 text-warning"></i> Ubah Bulan: ${namaEntity}`;
+                }
+                if (modalDesc) {
+                    modalDesc.textContent = `Sesuaikan periode bulan pelaporan realisasi khusus untuk "${namaEntity}".`;
+                }
+
+                setupPeriodeModalForm(currentVal);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalUbahPeriode')).show();
+            });
+        }
+
+        function setupPeriodeModalForm(targetPeriode) {
+            const select = document.getElementById('selectPeriodeBulan');
+            const customWrapper = document.getElementById('customPeriodeWrapper');
+            const customInput = document.getElementById('inputCustomPeriode');
+
+            let found = false;
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === targetPeriode) {
+                    select.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                select.value = "custom";
+                customWrapper.style.display = "block";
+                customInput.value = targetPeriode;
+            } else {
+                customWrapper.style.display = "none";
+                customInput.value = "";
+            }
+        }
+
+        function handlePeriodePresetChange() {
+            const select = document.getElementById('selectPeriodeBulan');
+            const customWrapper = document.getElementById('customPeriodeWrapper');
+            if (select.value === "custom") {
+                customWrapper.style.display = "block";
+                document.getElementById('inputCustomPeriode').focus();
+            } else {
+                customWrapper.style.display = "none";
+            }
+        }
+
+        function savePeriodeAktif(event) {
+            event.preventDefault();
+            const select = document.getElementById('selectPeriodeBulan');
+            let newPeriode = "";
+            if (select.value === "custom") {
+                newPeriode = document.getElementById('inputCustomPeriode').value.trim() || "s.d Juni";
+            } else {
+                newPeriode = select.value;
+            }
+
+            if (currentPeriodeScope.type === 'APBN' && currentPeriodeScope.key) {
+                const key = currentPeriodeScope.key;
+                const savedApbnPeriods = JSON.parse(localStorage.getItem(STORAGE_KEY_APBN_PERIODE) || '{}');
+                savedApbnPeriods[key] = newPeriode;
+                localStorage.setItem(STORAGE_KEY_APBN_PERIODE, JSON.stringify(savedApbnPeriods));
+
+                if (groupedAPBN[key]) groupedAPBN[key].periodeCustom = newPeriode;
+                Object.keys(activeAPBN).forEach(th => {
+                    if (Array.isArray(activeAPBN[th])) {
+                        activeAPBN[th].forEach(item => {
+                            if (normalizeKegiatanKey(item.namaKegiatan) === key) {
+                                item.periodeCustom = newPeriode;
+                            }
+                        });
+                    }
+                });
+                renderAPBNCards();
+                if (document.getElementById('apbnMatrixModal') && document.getElementById('apbnMatrixModal').classList.contains('show')) {
+                    openAPBNMatrix(key);
+                }
+                showNotification(`Periode realisasi kegiatan APBN berhasil diubah menjadi: ${newPeriode}`);
+            } else if (currentPeriodeScope.type === 'APBD' && currentPeriodeScope.key) {
+                const key = currentPeriodeScope.key;
+                if (activeAPBD[key]) {
+                    activeAPBD[key].periodeCustom = newPeriode;
+                    saveAPBD();
+                    renderMenuCards();
+                    if (document.getElementById('matrixModal') && document.getElementById('matrixModal').classList.contains('show')) {
+                        openUnitMatrix(key);
+                    }
+                    showNotification(`Periode realisasi unit APBD berhasil diubah menjadi: ${newPeriode}`);
+                }
+            } else {
+                periodeAktif = newPeriode;
+                localStorage.setItem(STORAGE_KEY_PERIODE, periodeAktif);
+                document.getElementById('labelPeriodeAktif').textContent = periodeAktif;
+                renderMenuCards();
+                renderAPBNCards();
+                if (currentViewingUnitKey && document.getElementById('matrixModal') && document.getElementById('matrixModal').classList.contains('show')) {
+                    openUnitMatrix(currentViewingUnitKey);
+                }
+                if (currentViewingAPBNKey && document.getElementById('apbnMatrixModal') && document.getElementById('apbnMatrixModal').classList.contains('show')) {
+                    openAPBNMatrix(currentViewingAPBNKey);
+                }
+                showNotification(`Periode realisasi global berhasil diubah menjadi: ${periodeAktif}`);
+            }
+
+            const modalInst = bootstrap.Modal.getInstance(document.getElementById('modalUbahPeriode'));
+            if (modalInst) modalInst.hide();
+        }
+
+        // ==========================================
+        // RESET DATA
+        // ==========================================
+        function resetDataToDefault() {
+            checkAdminAuth(() => {
+                if (confirm("Apakah Anda yakin ingin mengembalikan seluruh data APBD & APBN ke data awal sistem?")) {
+                    localStorage.removeItem(STORAGE_KEY_APBD);
+                    localStorage.removeItem(STORAGE_KEY_APBN);
+                    localStorage.removeItem(STORAGE_KEY_PERIODE);
+                    initData();
+                    if (currentModeTitle === "APBD") {
+                        showTabAPBD();
+                    } else {
+                        showTabAPBN();
+                    }
+                    showNotification("Seluruh data berhasil di-reset ke kondisi awal!");
+                }
+            });
+        }
+
+        function showNotification(pesan) {
+            const container = document.getElementById('toastContainer');
+            const toastEl = document.createElement('div');
+            toastEl.className = 'alert alert-success shadow-lg border-0 py-2 px-3 d-flex align-items-center gap-2 mb-2';
+            toastEl.style.borderRadius = '12px';
+            toastEl.innerHTML = `<i class="fa-solid fa-circle-check text-success fs-5"></i> <span class="small fw-bold">${pesan}</span>`;
+            container.appendChild(toastEl);
+
+            setTimeout(() => {
+                toastEl.style.transition = 'opacity 0.5s ease';
+                toastEl.style.opacity = '0';
+                setTimeout(() => toastEl.remove(), 500);
+            }, 3000);
+        }
+
+        // ==========================================
+        // TABS & NAVIGATION
+        // ==========================================
+        function showTabAPBD() {
+            currentModeTitle = "APBD";
+            const btnApbd = document.getElementById('btnAPBD');
+            const btnApbn = document.getElementById('btnAPBN');
+            if (btnApbd) btnApbd.className = "btn btn-toggle-source active-apbd";
+            if (btnApbn) btnApbn.className = "btn btn-toggle-source inactive";
+
+            const btnTambah = document.getElementById('btnTambahData');
+            if (btnTambah) {
+                btnTambah.className = "btn-crud-add";
+                const btnText = document.getElementById('btnTambahText');
+                if (btnText) btnText.textContent = "Tambah Unit APBD";
+            }
+
+            const navApbd = document.getElementById('navPillAPBD');
+            const navApbn = document.getElementById('navPillAPBN');
+            if (navApbd && navApbn) {
+                navApbd.className = "nav-pill-link active-pill-apbd";
+                navApbn.className = "nav-pill-link";
+            }
+
+            document.getElementById('menuContainer').classList.remove('d-none');
+            document.getElementById('apbnCardContainer').classList.add('d-none');
+            document.getElementById('filterTahunAPBN').classList.add('d-none');
+            document.getElementById('filterTahunAPBN').classList.remove('d-flex');
+            document.getElementById('mainTitle').innerHTML = '<i class="fa-solid fa-list-check text-success me-2"></i> Daftar Unit Kerja / Kegiatan APBD';
+
+            renderMenuCards();
+        }
+
+        function showTabAPBN() {
+            currentModeTitle = "APBN";
+            const btnApbd = document.getElementById('btnAPBD');
+            const btnApbn = document.getElementById('btnAPBN');
+            if (btnApbd) btnApbd.className = "btn btn-toggle-source inactive";
+            if (btnApbn) btnApbn.className = "btn btn-toggle-source active-apbn";
+
+            const btnTambah = document.getElementById('btnTambahData');
+            if (btnTambah) {
+                btnTambah.className = "btn-crud-add btn-crud-apbn";
+                const btnText = document.getElementById('btnTambahText');
+                if (btnText) btnText.textContent = "Tambah Kegiatan APBN";
+            }
+
+            const navApbd = document.getElementById('navPillAPBD');
+            const navApbn = document.getElementById('navPillAPBN');
+            if (navApbd && navApbn) {
+                navApbd.className = "nav-pill-link";
+                navApbn.className = "nav-pill-link active-pill-apbn";
+            }
+
+            document.getElementById('menuContainer').classList.add('d-none');
+            document.getElementById('apbnCardContainer').classList.remove('d-none');
+            document.getElementById('filterTahunAPBN').classList.add('d-none');
+            document.getElementById('filterTahunAPBN').classList.remove('d-flex');
+            document.getElementById('mainTitle').innerHTML = '<i class="fa-solid fa-landmark text-success me-2"></i> Realisasi Anggaran APBN';
+
+            renderAPBNCards();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            const btnClear = document.getElementById('btnClearSearch');
+            if (searchQuery.length > 0) {
+                btnClear.classList.remove('d-none');
+            } else {
+                btnClear.classList.add('d-none');
+            }
+
+            if (currentModeTitle === "APBD") {
+                renderMenuCards();
+            } else {
+                renderAPBNCards();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = "";
+            searchQuery = "";
+            document.getElementById('btnClearSearch').classList.add('d-none');
+            if (currentModeTitle === "APBD") {
+                renderMenuCards();
+            } else {
+                renderAPBNCards();
+            }
+        }
+
+        // ==========================================
+        // RENDER KARTU APBD
+        // ==========================================
+        function renderMenuCards() {
+            const container = document.getElementById('menuContainer');
+            const emptyState = document.getElementById('emptySearchState');
+            container.innerHTML = '';
+
+            let keys = Object.keys(activeAPBD);
+            if (searchQuery) {
+                keys = keys.filter(key => {
+                    const item = activeAPBD[key];
+                    return key.toLowerCase().includes(searchQuery) || item.nama.toLowerCase().includes(searchQuery);
+                });
+            }
+
+            document.getElementById('dataCountBadge').textContent = `${keys.length} Unit Kerja`;
+
+            if (keys.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            } else {
+                emptyState.classList.add('d-none');
+            }
+
+            keys.forEach(key => {
+                const item = activeAPBD[key];
+                const col = document.createElement('div');
+                col.className = 'col-12 col-md-6 col-lg-4';
+
+                const data2026 = item["2026"] || {};
+                const pagu2026 = data2026.paguApbd || 0;
+                const real2026 = data2026.realisasiKeuangan || 0;
+                const pct2026 = pagu2026 > 0 ? (real2026 / pagu2026) * 100 : (data2026.realisasiPersen || 0);
+
+                const unitPeriode = item.periodeCustom || periodeAktif;
+
+                col.innerHTML = `
+            <div class="card card-menu h-100 p-3">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge-code">Kode: ${key}</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn-action-edit" onclick="event.stopPropagation(); openEditModalAPBD('${key}')" title="Edit Unit Kerja (Admin)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-action-delete" onclick="event.stopPropagation(); deleteAPBDUnit('${key}')" title="Hapus Unit Kerja (Admin)">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h6 class="unit-name mt-1 mb-2" onclick="openUnitMatrix('${key}')" style="cursor: pointer;">
+                            <i class="fa-regular fa-folder text-warning me-1"></i> ${item.nama}
+                        </h6>
+
+                        <!-- Mini quick stats 2026 -->
+                        <div class="card-mini-stat" onclick="openUnitMatrix('${key}')" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="card-mini-stat-label">Pagu 2026:</span>
+                                <span class="card-mini-stat-val">${formatRupiah(pagu2026)}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-mini-stat-label">Realisasi (${unitPeriode}):</span>
+                                <span class="card-mini-stat-val text-success">${formatRupiah(real2026)} <span class="badge bg-success bg-opacity-10 text-success small">${formatPersen(pct2026)}</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end mt-3" onclick="openUnitMatrix('${key}')" style="cursor: pointer;">
+                        <small class="text-success fw-bold">Buka Folder Matriks (2022-2026) <i class="fa-solid fa-arrow-right-long ms-1"></i></small>
+                    </div>
+                </div>
+            </div>
+        `;
+                container.appendChild(col);
+            });
+        }
+
+        // ==========================================
+        // TRANSFORM APBN DATA: FLAT ARRAY → GROUPED BY KEGIATAN
+        // ==========================================
+        function normalizeKegiatanKey(name) {
+            const n = (name || '').toLowerCase().trim();
+            if (n.includes('tanaman pangan')) return 'ditjen_tanaman_pangan';
+            if (n.includes('hortikultura')) return 'ditjen_hortikultura';
+            if (n.includes('psp') || n.includes('prasarana') || n.includes('sarana pertanian')) return 'ditjen_psp';
+            if (n.includes('bppsdmp')) return 'bppsdmp';
+            if (n.includes('bapanas') || n.includes('bkp') || n.includes('pangan nasional')) return 'bapanas';
+            if (n.includes('lip') || n.includes('lahan') || n.includes('irigasi')) return 'ditjen_lip';
+            return n.replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+        }
+
+        function transformAPBNtoGrouped() {
+            const grouped = {};
+            const tahunList = Object.keys(activeAPBN).filter(k => /^\d{4}$/.test(k)).sort();
+            const savedApbnPeriods = JSON.parse(localStorage.getItem(STORAGE_KEY_APBN_PERIODE) || '{}');
+
+            tahunList.forEach(tahun => {
+                const items = activeAPBN[tahun] || [];
+                items.forEach(item => {
+                    const key = normalizeKegiatanKey(item.namaKegiatan);
+                    if (!grouped[key]) {
+                        grouped[key] = {
+                            nama: item.namaKegiatan,
+                            kewenangan: [],
+                            data: {},
+                            periodeCustom: savedApbnPeriods[key] || item.periodeCustom || null
+                        };
+                    }
+                    if (item.periodeCustom && !grouped[key].periodeCustom) {
+                        grouped[key].periodeCustom = item.periodeCustom;
+                    }
+                    if (parseInt(tahun) >= Math.max(...tahunList.filter(t => grouped[key].data[t]).map(Number), 0)) {
+                        grouped[key].nama = item.namaKegiatan;
+                    }
+                    if (!grouped[key].data[tahun]) grouped[key].data[tahun] = {};
+
+                    const kew = item.kewenangan || 'DK';
+                    grouped[key].data[tahun][kew] = { ...item };
+
+                    if (!grouped[key].kewenangan.includes(kew)) {
+                        grouped[key].kewenangan.push(kew);
+                    }
+                });
+            });
+
+            // Ensure any saved custom period is assigned even if items didn't have it
+            Object.keys(savedApbnPeriods).forEach(k => {
+                if (grouped[k] && !grouped[k].periodeCustom) {
+                    grouped[k].periodeCustom = savedApbnPeriods[k];
+                }
+            });
+
+            return grouped;
+        }
+
+        // ==========================================
+        // RENDER KARTU APBN (MIRIP APBD)
+        // ==========================================
+        function renderAPBNCards() {
+            const container = document.getElementById('apbnCardContainer');
+            const emptyState = document.getElementById('emptySearchState');
+            container.innerHTML = '';
+
+            let keys = Object.keys(groupedAPBN);
+            if (searchQuery) {
+                keys = keys.filter(key => {
+                    const item = groupedAPBN[key];
+                    return key.toLowerCase().includes(searchQuery) || item.nama.toLowerCase().includes(searchQuery)
+                        || item.kewenangan.some(k => k.toLowerCase().includes(searchQuery));
+                });
+            }
+
+            document.getElementById('dataCountBadge').textContent = `${keys.length} Kegiatan`;
+
+            if (keys.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            } else {
+                emptyState.classList.add('d-none');
+            }
+
+            keys.forEach(key => {
+                const item = groupedAPBN[key];
+                const col = document.createElement('div');
+                col.className = 'col-12 col-md-6 col-lg-4';
+
+                const tahunTerbaru = Object.keys(item.data).sort().pop() || '2026';
+                const dataTerbaru = item.data[tahunTerbaru] || {};
+                let totalPagu = 0, totalReal = 0;
+                Object.values(dataTerbaru).forEach(d => {
+                    const p = d.paguSetelahBlokir !== undefined ? d.paguSetelahBlokir : ((d.paguDipa || 0) + (d.paguRevisi || d.paguBlokir || d.paguRev2024 || 0));
+                    totalPagu += p;
+                    totalReal += (d.realisasiRp || 0);
+                });
+                const pct = totalPagu > 0 ? (totalReal / totalPagu) * 100 : 0;
+
+                const kewBadges = item.kewenangan.map(k => {
+                    const cls = k === 'DK' ? 'bg-primary' : (k === 'TP' ? 'bg-warning text-dark' : 'bg-info text-dark');
+                    return `<span class="badge ${cls} px-2 small">${k}</span>`;
+                }).join(' ');
+
+                const tahunRange = Object.keys(item.data).sort();
+                const rangeText = tahunRange.length > 0 ? `${tahunRange[0]}-${tahunRange[tahunRange.length - 1]}` : '—';
+
+                col.innerHTML = `
+            <div class="card card-menu h-100 p-3">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-1">${kewBadges}</div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn-action-edit" onclick="event.stopPropagation(); openEditModalAPBNFromCard('${key}')" title="Edit Kegiatan (Admin)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-action-delete" onclick="event.stopPropagation(); deleteAPBNGroup('${key}')" title="Hapus Kegiatan (Admin)">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h6 class="unit-name mt-1 mb-2" onclick="openAPBNMatrix('${key}')" style="cursor: pointer;">
+                            <i class="fa-solid fa-landmark text-success me-1"></i> ${item.nama}
+                        </h6>
+
+                        <div class="card-mini-stat" onclick="openAPBNMatrix('${key}')" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="card-mini-stat-label">Pagu ${tahunTerbaru}:</span>
+                                <span class="card-mini-stat-val">${formatRupiah(totalPagu)}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-mini-stat-label">Realisasi (${item.periodeCustom || periodeAktif}):</span>
+                                <span class="card-mini-stat-val text-success">${formatRupiah(totalReal)} <span class="badge bg-success bg-opacity-10 text-success small">${formatPersen(pct)}</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end mt-3" onclick="openAPBNMatrix('${key}')" style="cursor: pointer;">
+                        <small class="text-success fw-bold">Buka Folder Matriks (${rangeText}) <i class="fa-solid fa-arrow-right-long ms-1"></i></small>
+                    </div>
+                </div>
+            </div>
+        `;
+                container.appendChild(col);
+            });
+        }
+
+        // ==========================================
+        // APBN MATRIX MODAL (MULTIYEARS DENGAN DK/TP)
+        // ==========================================
+        function getAPBNItemValues(item) {
+            const pAwal = item.paguDipa !== undefined ? item.paguDipa : (item.paguAwal || 0);
+            const pRev = item.paguRevisi !== undefined ? item.paguRevisi : (item.paguBlokir || item.paguRev2024 || 0);
+            const pTahunan = item.paguSetelahBlokir !== undefined ? item.paguSetelahBlokir : (pAwal + pRev);
+            const realRp = item.realisasiRp || 0;
+            const realPct = pTahunan > 0 ? (realRp / pTahunan) * 100 : (item.realisasiPersen || 0);
+            const realFisik = item.realisasiFisik !== undefined ? item.realisasiFisik : 0;
+            const sisa = item.sisaAnggaran !== undefined ? item.sisaAnggaran : (pTahunan - realRp);
+            return { pAwal, pRev, pTahunan, realRp, realPct, realFisik, sisa };
+        }
+
+        function openAPBNMatrix(key) {
+            const group = groupedAPBN[key];
+            if (!group) return;
+
+            currentViewingAPBNKey = key;
+            const apbnPeriode = group.periodeCustom || periodeAktif;
+
+            document.getElementById('apbnMatrixTitle').innerHTML = `<i class="fa-solid fa-folder-open text-warning me-2"></i> Matriks [APBN] - ${group.nama}`;
+            document.getElementById('apbnMatrixPeriodeLabel').textContent = apbnPeriode;
+
+            const thead = document.getElementById('apbnMatrixTableHead');
+            const tbody = document.getElementById('apbnMatrixTableBody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            const tahunList = Object.keys(group.data).sort();
+            if (tahunList.length === 0) return;
+
+            // Header
+            let headerHtml = `<tr><th style="width: 28%; min-width: 200px;">Komponen Anggaran <span style="text-transform: none;">(Rp)</span></th>`;
+            tahunList.forEach(th => {
+                if (th === tahunList[tahunList.length - 1]) {
+                    headerHtml += `<th>${th} ${formatPeriodeHeaderHtml(apbnPeriode)}</th>`;
+                } else {
+                    headerHtml += `<th>${th}</th>`;
+                }
+            });
+            headerHtml += `<th class="bg-success text-white">JUMLAH</th></tr>`;
+            thead.innerHTML = headerHtml;
+
+            const komponenAPBN = [
+                { label: 'Pagu Awal', field: 'pAwal' },
+                { label: 'Pagu Revisi', field: 'pRev', isSigned: true },
+                { label: 'Pagu Tahunan', field: 'pTahunan', isBold: true },
+                { label: 'Realisasi Keuangan', field: 'realRp' },
+                { label: 'Sisa Anggaran', field: 'sisa', isSisa: true },
+                { label: 'Persentase Keuangan (%)', field: 'realPct', isPercent: true },
+                { label: 'Realisasi Fisik (%)', field: 'realFisik', isPercent: true }
+            ];
+
+            const kewList = group.kewenangan.sort();
+            const hasDKTP = kewList.length > 1;
+
+            // Render per kewenangan section
+            kewList.forEach((kew) => {
+                const kewLabel = kew === 'DK' ? 'Dekonsentrasi (DK)' : (kew === 'TP' ? 'Tugas Pembantuan (TP)' : kew);
+                const kewBadge = kew === 'DK' ? 'bg-primary' : (kew === 'TP' ? 'bg-warning text-dark' : 'bg-info text-dark');
+
+                if (hasDKTP) {
+                    const trHeader = document.createElement('tr');
+                    trHeader.className = 'table-secondary';
+                    trHeader.innerHTML = `<td colspan="${tahunList.length + 2}" class="text-start fw-bold small py-2 px-3"><span class="badge ${kewBadge} me-2">${kew}</span> ${kewLabel}</td>`;
+                    tbody.appendChild(trHeader);
+                }
+
+                komponenAPBN.forEach(komponen => {
+                    const tr = document.createElement('tr');
+                    const tdLabel = document.createElement('td');
+                    tdLabel.textContent = (hasDKTP ? '   ' : '') + komponen.label;
+                    tdLabel.className = komponen.isSisa ? 'text-start fw-bold bg-warning bg-opacity-10' : 'text-start fw-semibold bg-light';
+                    if (hasDKTP) tdLabel.style.paddingLeft = '2rem';
+                    tr.appendChild(tdLabel);
+
+                    let totalNilai = 0;
+                    let jumlahData = 0;
+
+                    tahunList.forEach(tahun => {
+                        const td = document.createElement('td');
+                        const entry = (group.data[tahun] && group.data[tahun][kew]) ? group.data[tahun][kew] : null;
+
+                        if (!entry) {
+                            td.textContent = '-';
+                            td.className = 'text-center text-muted';
+                        } else {
+                            const vals = getAPBNItemValues(entry);
+                            const nilai = vals[komponen.field];
+
+                            if (komponen.isPercent) {
+                                td.textContent = formatPersen(nilai);
+                                td.className = 'text-center fw-bold';
+                            } else if (komponen.isSigned) {
+                                td.innerHTML = formatAngkaStyled(nilai);
+                                td.className = 'text-end';
+                            } else if (komponen.isSisa) {
+                                td.textContent = formatAngka(nilai);
+                                td.className = nilai > 0 ? 'text-end fw-bold text-success' : (nilai < 0 ? 'text-end fw-bold text-danger' : 'text-end fw-bold');
+                            } else {
+                                td.textContent = formatAngka(nilai);
+                                td.className = komponen.isBold ? 'text-end fw-bold text-success' : 'text-end';
+                            }
+
+                            totalNilai += nilai;
+                            jumlahData++;
+                        }
+                        tr.appendChild(td);
+                    });
+
+                    // Kolom JUMLAH
+                    const tdTotal = document.createElement('td');
+                    tdTotal.className = 'text-end fw-bold table-success';
+                    if (komponen.isPercent) {
+                        tdTotal.textContent = jumlahData > 0 ? formatPersen(totalNilai / jumlahData) : '0%';
+                        tdTotal.className = 'text-center fw-bold table-success';
+                    } else {
+                        tdTotal.textContent = formatAngka(totalNilai);
+                    }
+                    tr.appendChild(tdTotal);
+                    tbody.appendChild(tr);
+                });
+
+                // Baris Aksi Entri Data (Admin: Edit / Hapus per tahun)
+                const trAksi = document.createElement('tr');
+                trAksi.className = 'table-light border-bottom';
+                const tdAksiLabel = document.createElement('td');
+                tdAksiLabel.className = 'text-start fw-semibold py-2 bg-light';
+                if (hasDKTP) tdAksiLabel.style.paddingLeft = '2rem';
+                tdAksiLabel.innerHTML = `<i class="fa-solid fa-gear text-secondary me-1"></i> Aksi Data (${kew})`;
+                trAksi.appendChild(tdAksiLabel);
+
+                tahunList.forEach(tahun => {
+                    const td = document.createElement('td');
+                    td.className = 'text-center py-2';
+                    const entry = (group.data[tahun] && group.data[tahun][kew]) ? group.data[tahun][kew] : null;
+                    if (entry) {
+                        td.innerHTML = `
+                            <div class="d-inline-flex align-items-center gap-1">
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size: 0.72rem;" onclick="openEditSpecificAPBN(${entry.id || -1}, '${tahun}', '${kew}', '${key}')" title="Edit Data ${kew} Tahun ${tahun}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size: 0.72rem;" onclick="deleteSpecificAPBNEntry(${entry.id || -1}, '${tahun}', '${kew}', '${key}')" title="Hapus Data ${kew} Tahun ${tahun}">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        td.innerHTML = `
+                            <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 0.72rem;" onclick="openAddSpecificAPBN('${tahun}', '${kew}', '${key}')" title="Tambah Data ${kew} Tahun ${tahun}">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        `;
+                    }
+                    trAksi.appendChild(td);
+                });
+
+                const tdAksiTotal = document.createElement('td');
+                tdAksiTotal.className = 'text-center text-muted small bg-light';
+                tdAksiTotal.innerHTML = `—`;
+                trAksi.appendChild(tdAksiTotal);
+                tbody.appendChild(trAksi);
+            });
+
+            // TOTAL gabungan (DK + TP) jika ada lebih dari 1 kewenangan
+            if (hasDKTP) {
+                const trTotalHeader = document.createElement('tr');
+                trTotalHeader.className = 'table-success';
+                trTotalHeader.innerHTML = `<td colspan="${tahunList.length + 2}" class="text-start fw-bold small py-2 px-3"><i class="fa-solid fa-calculator me-2"></i> TOTAL GABUNGAN (${kewList.join(' + ')})</td>`;
+                tbody.appendChild(trTotalHeader);
+
+                komponenAPBN.forEach(komponen => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'fw-bold';
+                    const tdLabel = document.createElement('td');
+                    tdLabel.textContent = komponen.label;
+                    tdLabel.className = 'text-start fw-bold bg-light';
+                    tdLabel.style.paddingLeft = '2rem';
+                    tr.appendChild(tdLabel);
+
+                    let grandTotal = 0;
+                    let grandCount = 0;
+
+                    tahunList.forEach(tahun => {
+                        const td = document.createElement('td');
+                        let sum = 0;
+                        let cnt = 0;
+                        kewList.forEach(kew => {
+                            const entry = (group.data[tahun] && group.data[tahun][kew]) ? group.data[tahun][kew] : null;
+                            if (entry) {
+                                const vals = getAPBNItemValues(entry);
+                                sum += vals[komponen.field];
+                                cnt++;
+                            }
+                        });
+
+                        if (cnt === 0) {
+                            td.textContent = '-';
+                            td.className = 'text-center text-muted';
+                        } else if (komponen.isPercent) {
+                            td.textContent = formatPersen(sum / cnt);
+                            td.className = 'text-center fw-bold';
+                        } else if (komponen.isSigned) {
+                            td.innerHTML = formatAngkaStyled(sum);
+                            td.className = 'text-end fw-bold';
+                        } else if (komponen.isSisa) {
+                            td.textContent = formatAngka(sum);
+                            td.className = sum > 0 ? 'text-end fw-bold text-success' : 'text-end fw-bold text-danger';
+                        } else {
+                            td.textContent = formatAngka(sum);
+                            td.className = komponen.isBold ? 'text-end fw-bold text-success' : 'text-end fw-bold';
+                        }
+
+                        grandTotal += (komponen.isPercent && cnt > 0) ? (sum / cnt) : sum;
+                        grandCount += cnt > 0 ? 1 : 0;
+                        tr.appendChild(td);
+                    });
+
+                    const tdGrand = document.createElement('td');
+                    tdGrand.className = 'text-end fw-bold table-success';
+                    if (komponen.isPercent) {
+                        tdGrand.textContent = grandCount > 0 ? formatPersen(grandTotal / grandCount) : '0%';
+                        tdGrand.className = 'text-center fw-bold table-success';
+                    } else {
+                        tdGrand.textContent = formatAngka(grandTotal);
+                    }
+                    tr.appendChild(tdGrand);
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Render Rincian Entri Data Kegiatan di bawah tabel matriks
+            renderAPBNEntriesTable(group, tahunList, kewList, key);
+
+            const apbnModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('apbnMatrixModal'));
+            apbnModal.show();
+            renderAPBNMatrixCharts(group, tahunList);
+        }
+
+        function editCurrentAPBNFromMatrix() {
+            if (!currentViewingAPBNKey) return;
+            const matModal = bootstrap.Modal.getInstance(document.getElementById('apbnMatrixModal'));
+            if (matModal) matModal.hide();
+            setTimeout(() => {
+                openEditModalAPBNFromCard(currentViewingAPBNKey);
+            }, 350);
+        }
+
+        // ==========================================
+        // RENDER GRAFIK APBN MATRIX (CHART.JS)
+        // ==========================================
+        function renderAPBNMatrixCharts(group, tahunList) {
+            const apbnPeriode = group.periodeCustom || periodeAktif;
+            const labels = tahunList.map(th => {
+                if (th === tahunList[tahunList.length - 1]) return `${th} (${apbnPeriode})`;
+                return th;
+            });
+
+            const paguData = [], realisasiData = [], sisaData = [], persenKeuData = [], persenFisikData = [];
+            let totalPagu = 0, totalReal = 0, totalSisa = 0;
+
+            tahunList.forEach(th => {
+                let pSum = 0, rSum = 0, sSum = 0, pkSum = 0, pfSum = 0, cnt = 0;
+                const yearData = group.data[th] || {};
+                Object.values(yearData).forEach(entry => {
+                    const v = getAPBNItemValues(entry);
+                    pSum += v.pTahunan;
+                    rSum += v.realRp;
+                    sSum += v.sisa;
+                    pkSum += v.realPct;
+                    pfSum += v.realFisik;
+                    cnt++;
+                });
+                paguData.push(pSum);
+                realisasiData.push(rSum);
+                sisaData.push(sSum);
+                persenKeuData.push(cnt > 0 ? pkSum / cnt : 0);
+                persenFisikData.push(cnt > 0 ? pfSum / cnt : 0);
+                totalPagu += pSum;
+                totalReal += rSum;
+                totalSisa += sSum;
+            });
+
+            const avgKeu = totalPagu > 0 ? (totalReal / totalPagu) * 100 : 0;
+
+            const elPagu = document.getElementById('apbnKpiTotalPagu');
+            const elReal = document.getElementById('apbnKpiTotalReal');
+            const elSisa = document.getElementById('apbnKpiTotalSisa');
+            if (elPagu) elPagu.textContent = formatRupiah(totalPagu);
+            if (elReal) elReal.innerHTML = `${formatRupiah(totalReal)} <span class="badge bg-success bg-opacity-10 text-success ms-1">${formatPersen(avgKeu)}</span>`;
+            if (elSisa) elSisa.textContent = formatRupiah(totalSisa);
+
+            if (apbnNominalChartInstance) { apbnNominalChartInstance.destroy(); apbnNominalChartInstance = null; }
+            if (apbnPercentChartInstance) { apbnPercentChartInstance.destroy(); apbnPercentChartInstance = null; }
+
+            if (typeof Chart === 'undefined') return;
+
+            const ctxNom = document.getElementById('apbnChartNominalCanvas');
+            if (ctxNom) {
+                apbnNominalChartInstance = new Chart(ctxNom, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Pagu Tahunan', data: paguData, backgroundColor: 'rgba(46, 125, 50, 0.85)', borderColor: '#2e7d32', borderWidth: 1.5, borderRadius: 6, maxBarThickness: 42 },
+                            { label: 'Realisasi Keuangan', data: realisasiData, backgroundColor: 'rgba(2, 136, 209, 0.85)', borderColor: '#0288d1', borderWidth: 1.5, borderRadius: 6, maxBarThickness: 42 },
+                            { label: 'Sisa Anggaran', data: sisaData, backgroundColor: 'rgba(245, 158, 11, 0.85)', borderColor: '#d97706', borderWidth: 1.5, borderRadius: 6, maxBarThickness: 42 }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 14, usePointStyle: true, pointStyle: 'rectRounded', font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' }, color: '#334155' } },
+                            tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: { family: "'Outfit', sans-serif", size: 13, weight: '700' }, bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }, padding: 10, cornerRadius: 8, callbacks: { label: function (ctx) { let l = ctx.dataset.label || ''; if (l) l += ': '; if (ctx.parsed.y !== null) l += formatRupiah(ctx.parsed.y); return l; } } }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' }, color: '#64748b' } },
+                            y: { grid: { color: 'rgba(226, 232, 240, 0.8)' }, ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }, color: '#64748b', callback: function (val) { if (Math.abs(val) >= 1000000000) return (val / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + ' M'; if (Math.abs(val) >= 1000000) return (val / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + ' Jt'; return val.toLocaleString('id-ID'); } } }
+                        }
+                    }
+                });
+            }
+
+            const ctxPct = document.getElementById('apbnChartPercentCanvas');
+            if (ctxPct) {
+                apbnPercentChartInstance = new Chart(ctxPct, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Realisasi Keuangan (%)', data: persenKeuData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', borderWidth: 2.8, pointBackgroundColor: '#10b981', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 7, tension: 0.35, fill: true },
+                            { label: 'Realisasi Fisik (%)', data: persenFisikData, borderColor: '#0284c7', backgroundColor: 'rgba(2,132,199,0.08)', borderWidth: 2.8, pointBackgroundColor: '#0284c7', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 7, tension: 0.35, fill: true }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 14, usePointStyle: true, pointStyle: 'circle', font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' }, color: '#334155' } },
+                            tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: { family: "'Outfit', sans-serif", size: 13, weight: '700' }, bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }, padding: 10, cornerRadius: 8, callbacks: { label: function (ctx) { let l = ctx.dataset.label || ''; if (l) l += ': '; if (ctx.parsed.y !== null) l += Number(ctx.parsed.y).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%'; return l; } } }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' }, color: '#64748b' } },
+                            y: { min: 0, max: 105, grid: { color: 'rgba(226, 232, 240, 0.8)' }, ticks: { stepSize: 20, font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }, color: '#64748b', callback: function (val) { return val + '%'; } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        function openEditModalAPBNFromCard(key) {
+            checkAdminAuth(() => {
+                const group = groupedAPBN[key];
+                if (!group) return;
+                const tahun = Object.keys(group.data).sort().pop();
+                if (!tahun) return;
+                const kew = group.kewenangan[0];
+                const entry = group.data[tahun] && group.data[tahun][kew];
+                if (entry) {
+                    openEditSpecificAPBN(entry.id || -1, tahun, kew, key);
+                } else {
+                    openAPBNMatrix(key);
+                }
+            });
+        }
+
+        async function deleteAPBNGroup(key) {
+            checkAdminAuth(async () => {
+                const group = groupedAPBN[key];
+                if (!group) return;
+
+                const konfirmasi = confirm(
+                    `PERHATIAN: Hapus SELURUH data kegiatan "${group.nama}" dari SEMUA tahun APBN (2022 - 2026)?\n\n` +
+                    `• Tindakan ini akan menghapus semua entri tahun dan kewenangan untuk kegiatan ini.\n` +
+                    `• Jika Anda HANYA ingin menghapus salah satu tahun atau kewenangan saja, silakan buka Folder Matriks kegiatan ini dan gunakan tombol Hapus di baris/rincian tahun yang diinginkan.\n\n` +
+                    `Apakah Anda yakin ingin menghapus SELURUH data kegiatan ini?`
+                );
+                if (!konfirmasi) return;
+
+                const idsToDelete = [];
+                Object.keys(activeAPBN).forEach(tahun => {
+                    if (Array.isArray(activeAPBN[tahun])) {
+                        activeAPBN[tahun].forEach(it => {
+                            if (normalizeKegiatanKey(it.namaKegiatan) === key && it.id) {
+                                idsToDelete.push(it.id);
+                            }
+                        });
+                    }
+                });
+
+                if (idsToDelete.length > 0) {
+                    try {
+                        await Promise.all(idsToDelete.map(id =>
+                            fetch('api/delete_apbn.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: id })
+                            })
+                        ));
+                        showNotification(`Seluruh data kegiatan "${group.nama}" berhasil dihapus!`);
+                        await loadDataFromServer();
+                    } catch (err) {
+                        console.error(err);
+                        alert("Gagal menghapus data dari server.");
+                    }
+                } else {
+                    Object.keys(activeAPBN).forEach(tahun => {
+                        if (Array.isArray(activeAPBN[tahun])) {
+                            activeAPBN[tahun] = activeAPBN[tahun].filter(it => normalizeKegiatanKey(it.namaKegiatan) !== key);
+                        }
+                    });
+                    groupedAPBN = transformAPBNtoGrouped();
+                    renderAPBNCards();
+                    showNotification(`Kegiatan "${group.nama}" berhasil dihapus!`);
+                }
+            });
+        }
+
+        // ==========================================
+        // SINGLE ENTRY ACTIONS: EDIT & DELETE DATA DALAM KEGIATAN APBN
+        // ==========================================
+        function openEditSpecificAPBN(id, tahun, kew, key) {
+            checkAdminAuth(() => {
+                const group = groupedAPBN[key];
+                if (!group) return;
+
+                // Cari item di activeAPBN[tahun]
+                const list = activeAPBN[tahun] || [];
+                let item = null;
+                let idx = -1;
+
+                if (id && id > 0) {
+                    idx = list.findIndex(it => it.id === id);
+                    if (idx >= 0) item = list[idx];
+                }
+                if (!item) {
+                    idx = list.findIndex(it => normalizeKegiatanKey(it.namaKegiatan) === key && it.kewenangan === kew);
+                    if (idx >= 0) item = list[idx];
+                }
+
+                if (!item && group.data[tahun] && group.data[tahun][kew]) {
+                    item = group.data[tahun][kew];
+                }
+
+                if (!item) {
+                    alert(`Data entri untuk tahun ${tahun} (${kew}) tidak ditemukan.`);
+                    return;
+                }
+
+                document.getElementById('modalAPBNTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-success me-2"></i> Edit Data Entri: ${group.nama} (${tahun} - ${kew})`;
+                document.getElementById('apbnEditIndex').value = idx;
+                const dbIdField = document.getElementById('apbnEditDbId');
+                if (dbIdField) dbIdField.value = item.id || -1;
+                document.getElementById('apbnFormTahun').value = tahun;
+                document.getElementById('apbnFormSatker').value = item.kodeSatker || "";
+                document.getElementById('apbnFormNama').value = item.namaKegiatan || group.nama;
+                document.getElementById('apbnFormKewenangan').value = item.kewenangan || kew || "DK";
+
+                const pAwal = item.paguDipa !== undefined ? item.paguDipa : (item.paguAwal || 0);
+                const pRev = item.paguRevisi !== undefined ? item.paguRevisi : (item.paguBlokir || item.paguRev2024 || 0);
+                const rRp = item.realisasiRp || 0;
+                const rFisik = item.realisasiFisik !== undefined ? item.realisasiFisik : (item.realisasiPersen || 0);
+
+                document.getElementById('apbnFormPaguAwal').value = pAwal;
+                document.getElementById('apbnFormPaguRevisi').value = pRev;
+                document.getElementById('apbnFormRealisasiRp').value = rRp;
+                document.getElementById('apbnFormRealisasiFisik').value = rFisik;
+
+                setPeriodeSelectValue('APBN', item.periodeCustom || (group && group.periodeCustom) || periodeAktif);
+
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFormAPBN')).show();
+            });
+        }
+
+        function openAddSpecificAPBN(tahun, kew, key) {
+            checkAdminAuth(() => {
+                const group = key ? groupedAPBN[key] : null;
+                const defaultNama = group ? group.nama : "";
+                let defaultSatker = "";
+
+                if (group) {
+                    for (const th of Object.keys(group.data)) {
+                        for (const kw of Object.keys(group.data[th])) {
+                            if (group.data[th][kw] && group.data[th][kw].kodeSatker) {
+                                defaultSatker = group.data[th][kw].kodeSatker;
+                                break;
+                            }
+                        }
+                        if (defaultSatker) break;
+                    }
+                }
+
+                const tahunPilihan = tahun || (document.getElementById('tahunApbn') ? document.getElementById('tahunApbn').value : "2026");
+                const kewPilihan = kew || (group && group.kewenangan && group.kewenangan[0] ? group.kewenangan[0] : "DK");
+
+                document.getElementById('modalAPBNTitle').innerHTML = `<i class="fa-solid fa-plus text-success me-2"></i> Tambah Data APBN: ${defaultNama ? defaultNama : 'Kegiatan Baru'}`;
+                document.getElementById('apbnEditIndex').value = "-1";
+                const dbIdField = document.getElementById('apbnEditDbId');
+                if (dbIdField) dbIdField.value = "-1";
+                document.getElementById('apbnFormTahun').value = tahunPilihan;
+                document.getElementById('apbnFormSatker').value = defaultSatker;
+                document.getElementById('apbnFormNama').value = defaultNama;
+                document.getElementById('apbnFormKewenangan').value = kewPilihan;
+                document.getElementById('apbnFormPaguAwal').value = "";
+                document.getElementById('apbnFormPaguRevisi').value = "0";
+                document.getElementById('apbnFormRealisasiRp').value = "";
+                document.getElementById('apbnFormRealisasiFisik').value = "0";
+
+                setPeriodeSelectValue('APBN', (group && group.periodeCustom) || periodeAktif);
+
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFormAPBN')).show();
+            });
+        }
+
+        async function deleteSpecificAPBNEntry(id, tahun, kew, key) {
+            checkAdminAuth(async () => {
+                const group = groupedAPBN[key];
+                const namaKegiatan = group ? group.nama : "kegiatan ini";
+
+                const confirmMsg = `Hapus data entri APBN:\n\n` +
+                    `• Kegiatan: ${namaKegiatan}\n` +
+                    `• Tahun: ${tahun}\n` +
+                    `• Kewenangan: ${kew}\n\n` +
+                    `PERHATIAN: Tindakan ini HANYA akan menghapus data entri tahun ${tahun} (${kew}), ` +
+                    `dan TIDAK akan menghapus kegiatan secara keseluruhan atau tahun lainnya.\n\n` +
+                    `Lanjutkan penghapusan data ini?`;
+
+                if (!confirm(confirmMsg)) return;
+
+                let serverDeleted = false;
+                if (id && id > 0) {
+                    try {
+                        const res = await fetch('api/delete_apbn.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: id })
+                        });
+                        const json = await res.json();
+                        if (json.status === 'success') {
+                            serverDeleted = true;
+                        } else {
+                            alert("Gagal menghapus data dari server: " + json.message);
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn("Koneksi server gagal, memperbarui data lokal:", err);
+                    }
+                }
+
+                // Hapus dari in-memory activeAPBN[tahun]
+                if (Array.isArray(activeAPBN[tahun])) {
+                    if (id && id > 0) {
+                        activeAPBN[tahun] = activeAPBN[tahun].filter(it => it.id !== id);
+                    } else {
+                        activeAPBN[tahun] = activeAPBN[tahun].filter(it =>
+                            !(normalizeKegiatanKey(it.namaKegiatan) === key && it.kewenangan === kew)
+                        );
+                    }
+                }
+
+                // Re-group
+                groupedAPBN = transformAPBNtoGrouped();
+                renderAPBNCards();
+
+                showNotification(`Data Tahun ${tahun} (${kew}) berhasil dihapus!`);
+
+                // Periksa apakah kegiatan ini masih memiliki data lain
+                if (groupedAPBN[key]) {
+                    openAPBNMatrix(key);
+                } else {
+                    const matModal = bootstrap.Modal.getInstance(document.getElementById('apbnMatrixModal'));
+                    if (matModal) matModal.hide();
+                    showNotification(`Seluruh data untuk kegiatan "${namaKegiatan}" telah habis.`);
+                }
+
+                // Sinkronisasi ulang dari server jika online
+                if (serverDeleted) {
+                    await loadDataFromServer();
+                }
+            });
+        }
+
+        function renderAPBNEntriesTable(group, tahunList, kewList, key) {
+            const entriesTbody = document.getElementById('apbnEntriesTableBody');
+            if (!entriesTbody) return;
+            entriesTbody.innerHTML = '';
+            let no = 1;
+
+            tahunList.forEach(tahun => {
+                kewList.forEach(kew => {
+                    const entry = (group.data[tahun] && group.data[tahun][kew]) ? group.data[tahun][kew] : null;
+                    if (entry) {
+                        const v = getAPBNItemValues(entry);
+                        const kewBadge = kew === 'DK' ? 'bg-primary' : (kew === 'TP' ? 'bg-warning text-dark' : 'bg-info text-dark');
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="text-center fw-bold text-secondary">${no++}</td>
+                            <td class="text-center fw-bold"><span class="badge bg-light text-dark border px-2 py-1">${tahun}</span></td>
+                            <td class="text-start font-monospace small">${entry.kodeSatker || '—'}</td>
+                            <td class="text-center"><span class="badge ${kewBadge}">${kew}</span></td>
+                            <td class="text-end fw-bold">${formatRupiah(v.pTahunan)}</td>
+                            <td class="text-end text-success fw-bold">${formatRupiah(v.realRp)}</td>
+                            <td class="text-center fw-bold">${formatPersen(v.realPct)}</td>
+                            <td class="text-center fw-bold">${formatPersen(v.realFisik)}</td>
+                            <td class="text-end fw-bold ${v.sisa >= 0 ? 'text-success' : 'text-danger'}">${formatRupiah(v.sisa)}</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1">
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 0.76rem;" onclick="openEditSpecificAPBN(${entry.id || -1}, '${tahun}', '${kew}', '${key}')" title="Edit Data Entri ${tahun} (${kew})">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size: 0.76rem;" onclick="deleteSpecificAPBNEntry(${entry.id || -1}, '${tahun}', '${kew}', '${key}')" title="Hapus Data Entri ${tahun} (${kew})">
+                                        <i class="fa-solid fa-trash-can me-1"></i> Hapus
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        entriesTbody.appendChild(tr);
+                    }
+                });
+            });
+
+            if (no === 1) {
+                entriesTbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted py-3">Tidak ada data entri untuk kegiatan ini.</td></tr>`;
+            }
+        }
+
+        // ==========================================
+        // CRUD LOGIC: APBN (ADMIN GUARDED)
+        // ==========================================
+        function openCreateModal() {
+            if (currentModeTitle === "APBD") {
+                openCreateModalAPBD();
+            } else {
+                openCreateModalAPBN();
+            }
+        }
+
+        function openCreateModalAPBN() {
+            checkAdminAuth(() => {
+                const tahunAktif = document.getElementById('tahunApbn').value || "2026";
+                document.getElementById('modalAPBNTitle').innerHTML = `<i class="fa-solid fa-plus text-success me-2"></i> Tambah Kegiatan APBN`;
+                document.getElementById('apbnEditIndex').value = "-1";
+                const dbIdField = document.getElementById('apbnEditDbId');
+                if (dbIdField) dbIdField.value = "-1";
+                document.getElementById('apbnFormTahun').value = tahunAktif;
+                document.getElementById('apbnFormSatker').value = "";
+                document.getElementById('apbnFormNama').value = "";
+                document.getElementById('apbnFormKewenangan').value = "DK";
+                setPeriodeSelectValue('APBN', periodeAktif);
+                document.getElementById('apbnFormPaguAwal').value = "";
+                document.getElementById('apbnFormPaguRevisi').value = "0";
+                document.getElementById('apbnFormRealisasiRp').value = "";
+                document.getElementById('apbnFormRealisasiFisik').value = "0";
+
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFormAPBN')).show();
+            });
+        }
+
+        function openEditModalAPBN(index) {
+            checkAdminAuth(() => {
+                const tahun = document.getElementById('tahunApbn').value;
+                const item = activeAPBN[tahun] && activeAPBN[tahun][index];
+                if (!item) return;
+
+                document.getElementById('modalAPBNTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-success me-2"></i> Edit Kegiatan APBN (${tahun})`;
+                document.getElementById('apbnEditIndex').value = index;
+                const dbIdField = document.getElementById('apbnEditDbId');
+                if (dbIdField) dbIdField.value = item.id || -1;
+                document.getElementById('apbnFormTahun').value = tahun;
+                document.getElementById('apbnFormSatker').value = item.kodeSatker || "";
+                document.getElementById('apbnFormNama').value = item.namaKegiatan || "";
+                document.getElementById('apbnFormKewenangan').value = item.kewenangan || "DK";
+                setPeriodeSelectValue('APBN', item.periodeCustom || periodeAktif);
+
+                const pAwal = item.paguDipa !== undefined ? item.paguDipa : (item.paguAwal || 0);
+                const pRev = item.paguRevisi !== undefined ? item.paguRevisi : (item.paguBlokir || item.paguRev2024 || 0);
+                const rRp = item.realisasiRp || 0;
+                const rFisik = item.realisasiFisik !== undefined ? item.realisasiFisik : (item.realisasiPersen || 0);
+
+                document.getElementById('apbnFormPaguAwal').value = pAwal;
+                document.getElementById('apbnFormPaguRevisi').value = pRev;
+                document.getElementById('apbnFormRealisasiRp').value = rRp;
+                document.getElementById('apbnFormRealisasiFisik').value = rFisik;
+
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFormAPBN')).show();
+            });
+        }
+
+        async function saveDataAPBN(event) {
+            event.preventDefault();
+            const editIndex = parseInt(document.getElementById('apbnEditIndex').value);
+            const dbIdField = document.getElementById('apbnEditDbId');
+            const explicitDbId = dbIdField ? parseInt(dbIdField.value) : -1;
+            const tahun = document.getElementById('apbnFormTahun').value;
+            const satker = document.getElementById('apbnFormSatker').value.trim();
+            const nama = document.getElementById('apbnFormNama').value.trim();
+            const kewenangan = document.getElementById('apbnFormKewenangan').value;
+            const periodeInput = document.getElementById('apbnFormPeriodeText');
+            const customPeriode = (periodeInput && periodeInput.value.trim()) ? periodeInput.value.trim() : "";
+            const pAwal = parseFloat(document.getElementById('apbnFormPaguAwal').value) || 0;
+            const pRev = parseFloat(document.getElementById('apbnFormPaguRevisi').value) || 0;
+            const rRp = parseFloat(document.getElementById('apbnFormRealisasiRp').value) || 0;
+            const rFisik = parseFloat(document.getElementById('apbnFormRealisasiFisik').value) || 0;
+
+            const pTahunan = pAwal + pRev;
+            const rPersen = pTahunan > 0 ? (rRp / pTahunan) * 100 : 0;
+            const sisa = pTahunan - rRp;
+
+            let dbId = explicitDbId > 0 ? explicitDbId : -1;
+            if (dbId <= 0 && editIndex >= 0 && activeAPBN[tahun] && activeAPBN[tahun][editIndex]) {
+                dbId = activeAPBN[tahun][editIndex].id || -1;
+            }
+
+            const record = {
+                id: dbId,
+                tahun: tahun,
+                kodeSatker: satker,
+                namaKegiatan: nama,
+                kewenangan: kewenangan,
+                paguDipa: pAwal,
+                paguRevisi: pRev,
+                paguSetelahBlokir: pTahunan,
+                realisasiRp: rRp,
+                realisasiPersen: rPersen,
+                realisasiFisik: rFisik,
+                sisaAnggaran: sisa,
+                periodeCustom: customPeriode
+            };
+
+            // Simpan custom period ke mapping storage
+            const gKey = normalizeKegiatanKey(nama);
+            if (customPeriode) {
+                try {
+                    const savedApbnPeriods = JSON.parse(localStorage.getItem(STORAGE_KEY_APBN_PERIODE) || '{}');
+                    savedApbnPeriods[gKey] = customPeriode;
+                    localStorage.setItem(STORAGE_KEY_APBN_PERIODE, JSON.stringify(savedApbnPeriods));
+                } catch(e) {}
+            }
+
+            // Perbarui periodeCustom untuk seluruh entri kegiatan ini agar langsung sinkron
+            Object.keys(activeAPBN).forEach(th => {
+                if (Array.isArray(activeAPBN[th])) {
+                    activeAPBN[th].forEach(it => {
+                        if (normalizeKegiatanKey(it.namaKegiatan) === gKey) {
+                            it.periodeCustom = customPeriode;
+                        }
+                    });
+                }
+            });
+
+            try {
+                const res = await fetch('api/save_apbn.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(record)
+                });
+                const json = await res.json();
+
+                if (json.status === 'success') {
+                    showNotification(json.message);
+                    const modalEl = document.getElementById('modalFormAPBN');
+                    const modalInst = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInst) modalInst.hide();
+                    document.getElementById('tahunApbn').value = tahun;
+                    await loadDataFromServer();
+
+                    if (currentViewingAPBNKey && document.getElementById('apbnMatrixModal').classList.contains('show')) {
+                        openAPBNMatrix(currentViewingAPBNKey);
+                    }
+                } else {
+                    alert("Gagal menyimpan: " + json.message);
+                }
+            } catch (err) {
+                console.warn("Terjadi kesalahan koneksi saat menyimpan APBN, memperbarui data lokal:", err);
+                if (!activeAPBN[tahun]) activeAPBN[tahun] = [];
+                if (editIndex >= 0 && activeAPBN[tahun][editIndex]) {
+                    activeAPBN[tahun][editIndex] = record;
+                } else {
+                    record.id = Date.now();
+                    activeAPBN[tahun].push(record);
+                }
+                groupedAPBN = transformAPBNtoGrouped();
+                renderAPBNCards();
+                const modalEl = document.getElementById('modalFormAPBN');
+                const modalInst = bootstrap.Modal.getInstance(modalEl);
+                if (modalInst) modalInst.hide();
+                if (currentViewingAPBNKey && document.getElementById('apbnMatrixModal').classList.contains('show')) {
+                    openAPBNMatrix(currentViewingAPBNKey);
+                }
+                showNotification("Data berhasil disimpan secara lokal!");
+            }
+        }
+
+        async function deleteAPBNItem(index) {
+            checkAdminAuth(async () => {
+                const tahun = document.getElementById('tahunApbn').value;
+                const item = activeAPBN[tahun] && activeAPBN[tahun][index];
+                if (!item) return;
+
+                if (confirm(`Hapus kegiatan "${item.namaKegiatan}" dari APBN ${tahun}?`)) {
+                    try {
+                        const res = await fetch('api/delete_apbn.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: item.id })
+                        });
+                        const json = await res.json();
+                        if (json.status === 'success') {
+                            showNotification("Kegiatan berhasil dihapus!");
+                            await loadDataFromServer();
+                        } else {
+                            alert("Gagal menghapus: " + json.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Kesalahan koneksi.");
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // CRUD LOGIC: APBD MULTIYEARS (DALAM FOLDER EDITOR)
+        // ==========================================
+        function openCreateModalAPBD() {
+            checkAdminAuth(() => {
+                document.getElementById('modalAPBDTitle').innerHTML = `<i class="fa-solid fa-folder-plus text-success me-2"></i> Tambah Unit Kerja Baru`;
+                document.getElementById('apbdEditKey').value = "";
+                document.getElementById('apbdFormKey').value = "";
+                document.getElementById('apbdFormKey').disabled = false;
+                document.getElementById('apbdFormNama').value = "";
+                setPeriodeSelectValue('APBD', periodeAktif);
+
+                // Bangun template multiyears default untuk unit baru
+                tempUnitEditData = {
+                    nama: "",
+                    periodeCustom: periodeAktif,
+                    "2022": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
+                    "2023": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
+                    "2024": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
+                    "2025": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
+                    "2026": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 }
+                };
+
+                currentEditingYear = "2026";
+                renderYearTabsNav();
+                loadYearDataIntoFields(currentEditingYear);
+
+                new bootstrap.Modal(document.getElementById('modalFormAPBD')).show();
+            });
+        }
+
+        function openEditModalAPBD(key) {
+            checkAdminAuth(() => {
+                const unit = activeAPBD[key];
+                if (!unit) return;
+
+                document.getElementById('modalAPBDTitle').innerHTML = `<i class="fa-solid fa-folder-open text-warning me-2"></i> Edit Data Unit: ${unit.nama}`;
+                document.getElementById('apbdEditKey').value = key;
+                document.getElementById('apbdFormKey').value = key;
+                document.getElementById('apbdFormKey').disabled = true;
+                document.getElementById('apbdFormNama').value = unit.nama;
+                setPeriodeSelectValue('APBD', unit.periodeCustom || periodeAktif);
+
+                // Clone deep unit data to working temp object
+                tempUnitEditData = JSON.parse(JSON.stringify(unit));
+
+                // Pastikan tahun 2022-2026 selalu ada
+                ['2022', '2023', '2024', '2025', '2026'].forEach(yr => {
+                    if (!tempUnitEditData[yr]) {
+                        tempUnitEditData[yr] = { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 };
+                    }
+                });
+
+                currentEditingYear = "2026";
+                renderYearTabsNav();
+                loadYearDataIntoFields(currentEditingYear);
+
+                new bootstrap.Modal(document.getElementById('modalFormAPBD')).show();
+            });
+        }
+
+        function editCurrentUnitFromMatrix() {
+            if (!currentViewingUnitKey) return;
+            const matModal = bootstrap.Modal.getInstance(document.getElementById('matrixModal'));
+            if (matModal) matModal.hide();
+            setTimeout(() => {
+                openEditModalAPBD(currentViewingUnitKey);
+            }, 350);
+        }
+
+        function renderYearTabsNav() {
+            const container = document.getElementById('yearTabsNav');
+            container.innerHTML = '';
+
+            const availableYears = Object.keys(tempUnitEditData)
+                .filter(k => /^\d{4}$/.test(k))
+                .sort((a, b) => b.localeCompare(a)); // Urutan tahun terbaru dulu (2026, 2025, ...)
+
+            availableYears.forEach(year => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = year === currentEditingYear;
+                btn.className = `btn btn-sm ${isActive ? 'btn-success fw-bold' : 'btn-outline-secondary'} rounded-pill px-3`;
+                btn.innerHTML = `${year} ${year === '2026' ? '<span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem;">Berjalan</span>' : ''}`;
+                btn.onclick = () => switchEditingYear(year);
+                container.appendChild(btn);
+            });
+        }
+
+        function switchEditingYear(targetYear) {
+            // Simpan input form saat ini ke temp data tahun sebelumnya
+            saveCurrentFieldsToTempData();
+
+            currentEditingYear = targetYear;
+            renderYearTabsNav();
+            loadYearDataIntoFields(targetYear);
+        }
+
+        function loadYearDataIntoFields(year) {
+            const dataYear = tempUnitEditData[year] || { paguAwal: 0, paguEfisiensi: 0, paguApbd: 0, realisasiKeuangan: 0, realisasiFisik: 0 };
+
+            document.getElementById('currentActiveYearLabel').innerHTML = `<i class="fa-solid fa-calendar-days me-2"></i> Input Anggaran Tahun ${year}`;
+            document.getElementById('yearStatusBadge').textContent = year === '2026' ? `Tahun Berjalan (${document.getElementById('apbdFormPeriodeText').value || periodeAktif})` : `Tahun Anggaran ${year}`;
+
+            const pAwal = dataYear.paguAwal || 0;
+            const pEfis = dataYear.paguEfisiensi !== undefined && dataYear.paguEfisiensi !== 0 ? dataYear.paguEfisiensi : (dataYear.paguAnggaran || 0);
+            const pApbd = dataYear.paguApbd !== undefined ? dataYear.paguApbd : (dataYear.paguTahunan || (pAwal + pEfis));
+            const rKeu = dataYear.realisasiKeuangan || 0;
+            const rFisik = dataYear.realisasiFisik || 0;
+
+            document.getElementById('fieldPaguAwal').value = pAwal;
+            document.getElementById('fieldPaguEfisiensi').value = pEfis;
+            document.getElementById('fieldPaguApbd').value = pApbd;
+            document.getElementById('fieldRealisasiKeuangan').value = rKeu;
+            document.getElementById('fieldRealisasiFisik').value = rFisik;
+
+            updateCalculationPreviews(pApbd, rKeu, rFisik);
+        }
+
+        function handleYearValueChange() {
+            const pAwal = parseFloat(document.getElementById('fieldPaguAwal').value) || 0;
+            const pEfis = parseFloat(document.getElementById('fieldPaguEfisiensi').value) || 0;
+            let pApbd = parseFloat(document.getElementById('fieldPaguApbd').value);
+            const rKeu = parseFloat(document.getElementById('fieldRealisasiKeuangan').value) || 0;
+            const rFisik = parseFloat(document.getElementById('fieldRealisasiFisik').value) || 0;
+
+            // Jika Pagu APBD belum diisi atau bernilai nol, hitung otomatis dari pagu awal + efisiensi
+            if (isNaN(pApbd) || pApbd === 0) {
+                pApbd = pAwal + pEfis;
+                document.getElementById('fieldPaguApbd').value = pApbd;
+            }
+
+            updateCalculationPreviews(pApbd, rKeu, rFisik);
+        }
+
+        function updateCalculationPreviews(pagu, realKeu, realFisik) {
+            const sisa = pagu - realKeu;
+            const persenKeu = pagu > 0 ? (realKeu / pagu) * 100 : 0;
+
+            const elSisa = document.getElementById('previewSisaAnggaran');
+            elSisa.textContent = formatRupiah(sisa);
+            elSisa.className = sisa >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+
+            document.getElementById('previewPersenKeuangan').textContent = formatPersen(persenKeu);
+            document.getElementById('previewPersenFisik').textContent = formatPersen(realFisik);
+        }
+
+        function saveCurrentFieldsToTempData() {
+            if (!currentEditingYear) return;
+            const pAwal = parseFloat(document.getElementById('fieldPaguAwal').value) || 0;
+            const pEfis = parseFloat(document.getElementById('fieldPaguEfisiensi').value) || 0;
+            const pApbd = parseFloat(document.getElementById('fieldPaguApbd').value) || (pAwal + pEfis);
+            const rKeu = parseFloat(document.getElementById('fieldRealisasiKeuangan').value) || 0;
+            const rFisik = parseFloat(document.getElementById('fieldRealisasiFisik').value) || 0;
+            const pctKeu = pApbd > 0 ? (rKeu / pApbd) * 100 : 0;
+
+            tempUnitEditData[currentEditingYear] = {
+                paguAwal: pAwal,
+                paguAnggaran: pEfis,
+                paguEfisiensi: pEfis,
+                paguApbd: pApbd,
+                paguTahunan: pApbd,
+                realisasiKeuangan: rKeu,
+                realisasiPersen: pctKeu,
+                realisasiFisik: rFisik
+            };
+        }
+
+        function resetCurrentYearDataAPBD() {
+            checkAdminAuth(() => {
+                if (!currentEditingYear) return;
+                if (!confirm(`Kosongkan seluruh nilai anggaran tahun ${currentEditingYear} untuk unit ini?`)) return;
+                document.getElementById('fieldPaguAwal').value = 0;
+                document.getElementById('fieldPaguEfisiensi').value = 0;
+                document.getElementById('fieldPaguApbd').value = 0;
+                document.getElementById('fieldRealisasiKeuangan').value = 0;
+                document.getElementById('fieldRealisasiFisik').value = 0;
+                handleYearValueChange();
+                saveCurrentFieldsToTempData();
+                showNotification(`Data anggaran tahun ${currentEditingYear} telah dikosongkan.`);
+            });
+        }
+
+        function addNewYearTab() {
+            const tahunBaru = prompt("Masukkan angka Tahun Anggaran baru (misal: 2027):");
+            if (!tahunBaru || !/^\d{4}$/.test(tahunBaru.trim())) {
+                if (tahunBaru) alert("Format tahun harus 4 digit angka (misal: 2027).");
+                return;
+            }
+            const yr = tahunBaru.trim();
+            if (!tempUnitEditData[yr]) {
+                tempUnitEditData[yr] = { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 };
+            }
+            switchEditingYear(yr);
+            showNotification(`Tahun anggaran ${yr} berhasil ditambahkan ke unit ini!`);
+        }
+
+        async function saveDataAPBD(event) {
+            event.preventDefault();
+            saveCurrentFieldsToTempData();
+
+            const editKey = document.getElementById('apbdEditKey').value.trim();
+            const formKey = document.getElementById('apbdFormKey').value.trim();
+            const nama = document.getElementById('apbdFormNama').value.trim();
+            const periodeCustom = document.getElementById('apbdFormPeriodeText').value.trim();
+
+            const targetKey = editKey || formKey;
+
+            if (!targetKey || !nama) {
+                alert("Kode Unit dan Nama Unit Kerja wajib diisi!");
+                return;
+            }
+
+            tempUnitEditData.nama = nama;
+            tempUnitEditData.periodeCustom = periodeCustom || periodeAktif;
+
+            try {
+                const res = await fetch('api/save_apbd.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        kode: targetKey,
+                        nama: nama,
+                        data: tempUnitEditData
+                    })
+                });
+
+                const json = await res.json();
+                if (json.status === 'success') {
+                    bootstrap.Modal.getInstance(document.getElementById('modalFormAPBD')).hide();
+                    showNotification(`Data unit "${nama}" berhasil disimpan!`);
+
+                    // Kita load ulang seluruh data dari server untuk memastikan sinkronisasi
+                    // Simpan state modal matriks jika sedang terbuka
+                    await loadDataFromServer();
+                } else {
+                    alert("Gagal menyimpan: " + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan koneksi saat menyimpan APBD.");
+            }
+        }
+
+        async function deleteAPBDUnit(key) {
+            checkAdminAuth(async () => {
+                const unit = activeAPBD[key];
+                if (!unit) return;
+
+                if (confirm(`Hapus unit kerja "${unit.nama}" (Kode: ${key}) beserta seluruh data multiyears-nya?`)) {
+                    try {
+                        const res = await fetch('api/delete_apbd.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ kode: key })
+                        });
+                        const json = await res.json();
+                        if (json.status === 'success') {
+                            showNotification("Unit Kerja berhasil dihapus!");
+                            await loadDataFromServer();
+                        } else {
+                            alert("Gagal menghapus: " + json.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Kesalahan koneksi.");
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // MATRIX MODAL (APBD FOLDER VIEW)
+        // ==========================================
+        function openUnitMatrix(key) {
+            if (currentModeTitle === "APBN") return;
+            const unit = activeAPBD[key];
+            if (!unit) return;
+
+            currentViewingUnitKey = key;
+            const unitPeriode = unit.periodeCustom || periodeAktif;
+
+            document.getElementById('modalTitle').innerHTML = `<i class="fa fa-folder-open text-warning me-2"></i> Matriks [APBD] - ${unit.nama}`;
+            document.getElementById('matrixPeriodeLabel').textContent = unitPeriode;
+
+            const thead = document.getElementById('matrixTableHead');
+            const tbody = document.getElementById('matrixTableBody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            // Dapatkan daftar tahun secara dinamis dari unit
+            let tahunList = Object.keys(unit).filter(k => /^\d{4}$/.test(k)).sort();
+            if (tahunList.length === 0) tahunList = ['2022', '2023', '2024', '2025', '2026'];
+
+            // Render Header Dinamis
+            let headerHtml = `<tr><th style="width: 25%; min-width: 170px;">Komponen Anggaran <span style="text-transform: none;">(Rp)</span></th>`;
+            tahunList.forEach(th => {
+                if (th === '2026' || th === tahunList[tahunList.length - 1]) {
+                    headerHtml += `<th id="thMatrix2026">${th} ${formatPeriodeHeaderHtml(unitPeriode)}</th>`;
+                } else {
+                    headerHtml += `<th>${th}</th>`;
+                }
+            });
+            headerHtml += `<th class="bg-success text-white">JUMLAH</th></tr>`;
+            thead.innerHTML = headerHtml;
+
+            const komponenList = [
+                { label: 'Pagu Awal', field: 'paguAwal' },
+                { label: 'Pagu Penambahan/Pengurangan', isPenambahanPengurangan: true, customStyleAPBD: true },
+                { label: 'Pagu Tahunan', field: 'paguApbd' },
+                { label: 'Realisasi Keuangan', field: 'realisasiKeuangan' },
+                { label: 'Sisa Pagu Anggaran', isSisaPagu: true },
+                { label: 'Persentase Keuangan (%)', field: 'realisasiPersen', isPercent: true },
+                { label: 'Realisasi Fisik (%)', field: 'realisasiFisik', isPercent: true }
+            ];
+
+            komponenList.forEach(komponen => {
+                const tr = document.createElement('tr');
+                const labelClass = komponen.isSisaPagu ? 'text-start fw-bold bg-warning bg-opacity-25' : 'text-start fw-semibold bg-light';
+                const tdLabel = document.createElement('td');
+
+                tdLabel.textContent = komponen.label;
+                tdLabel.className = labelClass;
+                tr.appendChild(tdLabel);
+
+                let totalNilai = 0;
+                let jumlahTahunData = 0;
+
+                tahunList.forEach(tahun => {
+                    const tdTahun = document.createElement('td');
+                    let nilai = 0;
+
+                    if (komponen.isSisaPagu) {
+                        const pagu = (unit[tahun] && (unit[tahun]['paguApbd'] !== undefined ? unit[tahun]['paguApbd'] : unit[tahun]['paguTahunan'])) || 0;
+                        const realisasi = (unit[tahun] && unit[tahun]['realisasiKeuangan']) || 0;
+                        nilai = pagu > 0 ? (pagu - realisasi) : 0;
+                        tdTahun.className = nilai > 0 ? 'text-end fw-bold text-success' : (nilai < 0 ? 'text-end fw-bold text-danger' : 'text-end fw-bold text-dark');
+                        tdTahun.textContent = formatAngka(nilai);
+                    } else if (komponen.isPenambahanPengurangan) {
+                        const dataTahun = unit[tahun] || {};
+                        if (dataTahun.paguEfisiensi !== undefined && dataTahun.paguEfisiensi !== 0) {
+                            nilai = dataTahun.paguEfisiensi;
+                        } else if (dataTahun.paguAnggaran !== undefined && dataTahun.paguAnggaran !== 0) {
+                            nilai = dataTahun.paguAnggaran;
+                        } else if (dataTahun.paguApbd !== undefined && dataTahun.paguAwal !== undefined && dataTahun.paguApbd !== dataTahun.paguAwal) {
+                            nilai = dataTahun.paguApbd - dataTahun.paguAwal;
+                        } else {
+                            nilai = 0;
+                        }
+                        if (nilai === 0) {
+                            tdTahun.textContent = '-';
+                            tdTahun.className = 'text-center text-muted';
+                        } else {
+                            tdTahun.innerHTML = formatAngkaStyled(nilai);
+                            tdTahun.className = 'text-end';
+                        }
+                    } else if (komponen.customStyleAPBD) {
+                        nilai = (unit[tahun] && unit[tahun][komponen.field]) ? unit[tahun][komponen.field] : 0;
+                        tdTahun.innerHTML = formatAngkaStyled(nilai);
+                        tdTahun.className = 'text-end';
+                    } else {
+                        if (!unit[tahun] || unit[tahun][komponen.field] === undefined) {
+                            tdTahun.textContent = '-';
+                            tdTahun.className = 'text-center text-muted';
+                            nilai = 0;
+                        } else {
+                            nilai = unit[tahun][komponen.field];
+                            if (komponen.field === 'realisasiPersen' && unit[tahun].paguApbd > 0 && unit[tahun].realisasiKeuangan !== undefined) {
+                                nilai = (unit[tahun].realisasiKeuangan / unit[tahun].paguApbd) * 100;
+                            }
+                            tdTahun.className = komponen.isPercent ? 'text-center fw-bold' : 'text-end';
+                            tdTahun.textContent = komponen.isPercent ? formatPersen(nilai) : formatAngka(nilai);
+                        }
+                    }
+
+                    tr.appendChild(tdTahun);
+
+                    totalNilai += nilai;
+                    if (unit[tahun] && unit[tahun][komponen.field] !== undefined) jumlahTahunData++;
+                });
+
+                const tdTotal = document.createElement('td');
+                if (komponen.customStyleAPBD) {
+                    tdTotal.className = 'text-end fw-bold table-primary';
+                    tdTotal.innerHTML = formatAngkaStyled(totalNilai);
+                } else if (komponen.isSisaPagu) {
+                    tdTotal.className = totalNilai > 0 ? 'text-end fw-bold table-primary text-success' : (totalNilai < 0 ? 'text-end fw-bold table-primary text-danger' : 'text-end fw-bold table-primary text-dark');
+                    tdTotal.textContent = formatAngka(totalNilai);
+                } else {
+                    tdTotal.className = 'text-end fw-bold table-primary text-dark';
+                    if (komponen.isPercent) {
+                        const rataRata = jumlahTahunData > 0 ? (totalNilai / jumlahTahunData) : 0;
+                        tdTotal.textContent = formatPersen(rataRata);
+                    } else {
+                        tdTotal.textContent = formatAngka(totalNilai);
+                    }
+                }
+                tr.appendChild(tdTotal);
+                tbody.appendChild(tr);
+            });
+
+            const matrixModal = new bootstrap.Modal(document.getElementById('matrixModal'));
+            matrixModal.show();
+            renderMatrixCharts(unit, tahunList, unitPeriode);
+        }
+
+        // ==========================================
+        // RENDER GRAFIK MATRIKS APBD (CHART.JS)
+        // ==========================================
+        function renderMatrixCharts(unit, tahunList, unitPeriode) {
+            const labels = tahunList.map(th => {
+                if (th === '2026' || th === tahunList[tahunList.length - 1]) {
+                    return `${th} (${unitPeriode})`;
+                }
+                return th;
+            });
+
+            const paguData = [];
+            const realisasiData = [];
+            const sisaData = [];
+            const persenKeuData = [];
+            const persenFisikData = [];
+
+            let totalPagu = 0;
+            let totalReal = 0;
+            let totalSisa = 0;
+
+            tahunList.forEach(th => {
+                const d = unit[th] || {};
+                const p = d.paguApbd !== undefined ? d.paguApbd : (d.paguTahunan || 0);
+                const r = d.realisasiKeuangan || 0;
+                const s = p > 0 ? (p - r) : 0;
+                const pk = d.realisasiPersen !== undefined ? d.realisasiPersen : (p > 0 ? (r / p) * 100 : 0);
+                const pf = d.realisasiFisik !== undefined ? d.realisasiFisik : 0;
+
+                paguData.push(p);
+                realisasiData.push(r);
+                sisaData.push(s);
+                persenKeuData.push(pk);
+                persenFisikData.push(pf);
+
+                totalPagu += p;
+                totalReal += r;
+                totalSisa += s;
+            });
+
+            const avgKeu = totalPagu > 0 ? (totalReal / totalPagu) * 100 : 0;
+
+            // Update KPI summary strip
+            const elPagu = document.getElementById('kpiChartTotalPagu');
+            const elReal = document.getElementById('kpiChartTotalReal');
+            const elSisa = document.getElementById('kpiChartTotalSisa');
+            if (elPagu) elPagu.textContent = formatRupiah(totalPagu);
+            if (elReal) elReal.innerHTML = `${formatRupiah(totalReal)} <span class="badge bg-success bg-opacity-10 text-success ms-1">${formatPersen(avgKeu)}</span>`;
+            if (elSisa) elSisa.textContent = formatRupiah(totalSisa);
+
+            // Bersihkan instance chart lama
+            if (matrixNominalChartInstance) {
+                matrixNominalChartInstance.destroy();
+                matrixNominalChartInstance = null;
+            }
+            if (matrixPercentChartInstance) {
+                matrixPercentChartInstance.destroy();
+                matrixPercentChartInstance = null;
+            }
+
+            if (typeof Chart === 'undefined') {
+                console.warn("Chart.js belum dimuat.");
+                return;
+            }
+
+            // 1. Chart Nominal (Bar Chart)
+            const ctxNominal = document.getElementById('matrixChartNominalCanvas');
+            if (ctxNominal) {
+                matrixNominalChartInstance = new Chart(ctxNominal, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Pagu Tahunan',
+                                data: paguData,
+                                backgroundColor: 'rgba(30, 64, 175, 0.85)',
+                                borderColor: '#1e40af',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                maxBarThickness: 42
+                            },
+                            {
+                                label: 'Realisasi Keuangan',
+                                data: realisasiData,
+                                backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                                borderColor: '#059669',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                maxBarThickness: 42
+                            },
+                            {
+                                label: 'Sisa Pagu',
+                                data: sisaData,
+                                backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                                borderColor: '#d97706',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                maxBarThickness: 42
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    boxWidth: 14,
+                                    usePointStyle: true,
+                                    pointStyle: 'rectRounded',
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' },
+                                    color: '#334155'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleFont: { family: "'Outfit', sans-serif", size: 13, weight: '700' },
+                                bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) {
+                                            label += formatRupiah(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' },
+                                    color: '#64748b'
+                                }
+                            },
+                            y: {
+                                grid: { color: 'rgba(226, 232, 240, 0.8)' },
+                                ticks: {
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
+                                    color: '#64748b',
+                                    callback: function (val) {
+                                        if (Math.abs(val) >= 1000000000) {
+                                            return (val / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + ' M';
+                                        } else if (Math.abs(val) >= 1000000) {
+                                            return (val / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + ' Jt';
+                                        }
+                                        return val.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Chart Persentase (Line Chart)
+            const ctxPercent = document.getElementById('matrixChartPercentCanvas');
+            if (ctxPercent) {
+                matrixPercentChartInstance = new Chart(ctxPercent, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Realisasi Keuangan (%)',
+                                data: persenKeuData,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                                borderWidth: 2.8,
+                                pointBackgroundColor: '#10b981',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                tension: 0.35,
+                                fill: true
+                            },
+                            {
+                                label: 'Realisasi Fisik (%)',
+                                data: persenFisikData,
+                                borderColor: '#0284c7',
+                                backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                                borderWidth: 2.8,
+                                pointBackgroundColor: '#0284c7',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                tension: 0.35,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    boxWidth: 14,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' },
+                                    color: '#334155'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleFont: { family: "'Outfit', sans-serif", size: 13, weight: '700' },
+                                bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) {
+                                            label += Number(context.parsed.y).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' },
+                                    color: '#64748b'
+                                }
+                            },
+                            y: {
+                                min: 0,
+                                max: 105,
+                                grid: { color: 'rgba(226, 232, 240, 0.8)' },
+                                ticks: {
+                                    stepSize: 20,
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
+                                    color: '#64748b',
+                                    callback: function (val) {
+                                        return val + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function setChartDisplayMode(mode) {
+            currentChartDisplayMode = mode;
+            const colNominal = document.getElementById('chartColNominal');
+            const colPercent = document.getElementById('chartColPercent');
+            const btnAll = document.getElementById('tabChartAll');
+            const btnNominal = document.getElementById('tabChartNominal');
+            const btnPercent = document.getElementById('tabChartPercent');
+
+            [btnAll, btnNominal, btnPercent].forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('active', 'btn-success');
+                    btn.classList.add('btn-outline-success');
+                }
+            });
+
+            if (mode === 'all') {
+                if (colNominal) { colNominal.className = 'col-12 col-lg-7'; colNominal.style.display = 'block'; }
+                if (colPercent) { colPercent.className = 'col-12 col-lg-5'; colPercent.style.display = 'block'; }
+                if (btnAll) { btnAll.classList.add('active', 'btn-success'); btnAll.classList.remove('btn-outline-success'); }
+            } else if (mode === 'nominal') {
+                if (colNominal) { colNominal.className = 'col-12'; colNominal.style.display = 'block'; }
+                if (colPercent) { colPercent.style.display = 'none'; }
+                if (btnNominal) { btnNominal.classList.add('active', 'btn-success'); btnNominal.classList.remove('btn-outline-success'); }
+            } else if (mode === 'percent') {
+                if (colNominal) { colNominal.style.display = 'none'; }
+                if (colPercent) { colPercent.className = 'col-12'; colPercent.style.display = 'block'; }
+                if (btnPercent) { btnPercent.classList.add('active', 'btn-success'); btnPercent.classList.remove('btn-outline-success'); }
+            }
+
+            setTimeout(() => {
+                if (matrixNominalChartInstance) matrixNominalChartInstance.resize();
+                if (matrixPercentChartInstance) matrixPercentChartInstance.resize();
+            }, 80);
+        }
+
+        // ==========================================
+        // FORMATTER UTILITIES
+        // ==========================================
+        function formatAngka(angka) {
+            if (angka === 0 || !angka) return '0';
+            const isNegative = angka < 0;
+            const formatted = Math.abs(angka).toLocaleString('id-ID');
+            return (isNegative ? '- ' : '') + formatted;
+        }
+
+        function formatAngkaStyled(val) {
+            if (!val || val === 0) return `<span>-</span>`;
+            if (val < 0) {
+                return `<span style="color: #dc3545; font-weight: 600;">- ${Math.abs(val).toLocaleString("id-ID")}</span>`;
+            } else {
+                return `<span style="color: #000; font-weight: 600;">${val.toLocaleString("id-ID")}</span>`;
+            }
+        }
+
+        function formatRupiah(angka) {
+            if (angka === 0 || !angka) return 'Rp 0';
+            const isNegative = angka < 0;
+            const formatted = Math.abs(angka).toLocaleString('id-ID');
+            return (isNegative ? 'Rp - ' : 'Rp ') + formatted;
+        }
+
+        function formatRupiahStyled(val) {
+            if (!val || val === 0) return `<span>-</span>`;
+            if (val < 0) {
+                return `<span style="color: #dc3545; font-weight: 600;">Rp - ${Math.abs(val).toLocaleString("id-ID")}</span>`;
+            } else {
+                return `<span style="color: #000; font-weight: 600;">Rp ${val.toLocaleString("id-ID")}</span>`;
+            }
+        }
+
+        function formatPersen(angka) {
+            if (angka === 0 || !angka) return '0%';
+            return Number(angka).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%';
+        }
+
+        window.onload = function () {
+            initData();
+            showTabAPBD();
+
+            const matrixModalEl = document.getElementById('matrixModal');
+            if (matrixModalEl) {
+                matrixModalEl.addEventListener('shown.bs.modal', function () {
+                    if (matrixNominalChartInstance) matrixNominalChartInstance.resize();
+                    if (matrixPercentChartInstance) matrixPercentChartInstance.resize();
+                });
+            }
+        };
+    </script>
+</body>
+
+</html>
