@@ -1,0 +1,30 @@
+# ==========================================
+# SISFOR Anggaran - Git Ignore Rules
+# ==========================================
+
+# 1. FILE PALING SENSITIF (JANGAN PERNAH DI-COMMIT!)
+# Berisi password database dan password admin
+.env
+.env.local
+.env.*.local
+
+# 2. File Log & Cache Server
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 3. File Editor & Sistem Operasi
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 4. File Sementara / Backup
+*.bak
+*.tmp
+*.swp
+*~
