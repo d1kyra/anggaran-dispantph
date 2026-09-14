@@ -19,14 +19,15 @@ if (!isset($input['kode']) || !isset($input['nama']) || !isset($input['data'])) 
     exit;
 }
 
-$kode = $input['kode'];
-$nama = $input['nama'];
-$dataYears = $input['data'];
+$kode = strip_tags(trim((string)$input['kode']));
+$nama = strip_tags(trim((string)$input['nama']));
+$dataYears = is_array($input['data']) ? $input['data'] : [];
 
 try {
     $pdo->beginTransaction();
 
-    $periode_custom = $input['periodeCustom'] ?? ($dataYears['periodeCustom'] ?? null);
+    $rawPeriode = $input['periodeCustom'] ?? ($dataYears['periodeCustom'] ?? null);
+    $periode_custom = !empty($rawPeriode) ? strip_tags(trim((string)$rawPeriode)) : null;
 
     // Cek apakah unit sudah ada, jika belum insert
     $stmt = $pdo->prepare("SELECT kode FROM apbd_unit WHERE kode = ?");

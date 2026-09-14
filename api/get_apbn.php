@@ -39,7 +39,8 @@ try {
     echo json_encode(["status" => "success", "data" => $result]);
 
 } catch (Exception $e) {
+    error_log("get_apbn error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+    echo json_encode(["status" => "error", "message" => "Terjadi kesalahan internal saat mengambil data APBN."]);
 }
 ?>

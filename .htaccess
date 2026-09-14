@@ -1,12 +1,12 @@
 # ==============================================================================
-# SISFOR Anggaran - Apache Security Configuration (.htaccess)
+# SISFOR Anggaran - Apache Security & Hardening Configuration (.htaccess)
 # ==============================================================================
 
-# 1. Matikan Directory Browsing (Mencegah pengunjung melihat daftar file folder)
+# 1. Matikan Directory Browsing (Mencegah bot/hacker melihat daftar file folder)
 Options -Indexes
 
-# 2. Blokir akses langsung ke file sensitif & konfigurasi server
-<FilesMatch "^(\.env|\.env\..*|\.git.*|.*\.sql|.*\.jsonl?|composer\..*)$">
+# 2. Blokir akses ke file sensitif (.env, .git, sql, config, markdown, log)
+<FilesMatch "^(\.env|\.env\..*|\.git.*|.*\.sql|.*\.jsonl?|composer\..*|.*\.log|.*\.md)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -16,7 +16,18 @@ Options -Indexes
     </IfModule>
 </FilesMatch>
 
-# 3. Blokir akses HTTP langsung ke file internal middleware
+# 3. Blokir akses ke file .htaccess itu sendiri
+<Files ".htaccess">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</Files>
+
+# 4. Blokir akses HTTP langsung ke file internal middleware
 <FilesMatch "^(auth_middleware)\.php$">
     <IfModule mod_authz_core.c>
         Require all denied
@@ -27,11 +38,11 @@ Options -Indexes
     </IfModule>
 </FilesMatch>
 
-# 4. Security Headers
+# 5. Security Headers
 <IfModule mod_headers.c>
-    # Mencegah clickjacking
+    # Mencegah clickjacking / embedding di iframe situs judi
     Header always set X-Frame-Options "SAMEORIGIN"
-    # Mencegah MIME-type sniffing
+    # Mencegah MIME-type sniffing (mencegah file gambar dieksekusi sebagai script)
     Header always set X-Content-Type-Options "nosniff"
     # XSS Protection
     Header always set X-XSS-Protection "1; mode=block"
@@ -39,8 +50,22 @@ Options -Indexes
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# 5. Pengalihan internal admin.html ke admin.php
+# 6. Mod_Rewrite Rules: Blokir Scanner Backdoor, Injeksi Judol, & Pengalihan Admin
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # A. Blokir metode HTTP berisiko (TRACE & TRACK)
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+    RewriteRule .* - [F,L]
+
+    # B. Blokir query string berbahaya (Injeksi Script, Webshell, LFI/RFI)
+    RewriteCond %{QUERY_STRING} (eval\(|base64_decode|system\(|passthru\(|shell_exec\(|proc_open) [NC,OR]
+    RewriteCond %{QUERY_STRING} (<script.*>|%3Cscript.*%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union.*select|insert.*into|drop.*table|benchmark\(|sleep\() [NC,OR]
+    RewriteCond %{QUERY_STRING} (php:\/\/|data:\/\/|glob:\/\/|file:\/\/) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\.\.\/|\.\.\\) [NC]
+    RewriteRule .* - [F,L]
+
+    # C. Pengalihan internal admin.html ke admin.php
     RewriteRule ^admin\.html$ admin.php [L]
 </IfModule>

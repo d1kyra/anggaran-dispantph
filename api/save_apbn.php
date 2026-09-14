@@ -21,9 +21,9 @@ if (!isset($input['tahun']) || !isset($input['kodeSatker'])) {
 
 $id = isset($input['id']) ? (int)$input['id'] : -1;
 $tahun = (int)$input['tahun'];
-$kode_satker = $input['kodeSatker'];
-$nama_kegiatan = $input['namaKegiatan'];
-$kewenangan = $input['kewenangan'];
+$kode_satker = strip_tags(trim((string)($input['kodeSatker'] ?? '')));
+$nama_kegiatan = strip_tags(trim((string)($input['namaKegiatan'] ?? '')));
+$kewenangan = strip_tags(trim((string)($input['kewenangan'] ?? '')));
 $pagu_dipa = $input['paguDipa'] ?? 0;
 $pagu_revisi = $input['paguRevisi'] ?? 0;
 $pagu_setelah_blokir = $input['paguSetelahBlokir'] ?? 0;
@@ -31,7 +31,7 @@ $realisasi_rp = $input['realisasiRp'] ?? 0;
 $realisasi_persen = $input['realisasiPersen'] ?? 0;
 $realisasi_fisik = $input['realisasiFisik'] ?? 0;
 $sisa_anggaran = $input['sisaAnggaran'] ?? 0;
-$periode_custom = !empty($input['periodeCustom']) ? trim($input['periodeCustom']) : null;
+$periode_custom = !empty($input['periodeCustom']) ? strip_tags(trim((string)$input['periodeCustom'])) : null;
 
 try {
     $hasPeriodeCol = false;
