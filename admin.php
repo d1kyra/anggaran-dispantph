@@ -1054,9 +1054,10 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
 
         async function loadDataFromServer() {
             try {
+                const ts = Date.now();
                 const [apbdRes, apbnRes] = await Promise.all([
-                    fetch('api/get_apbd.php'),
-                    fetch('api/get_apbn.php')
+                    fetch('api/get_apbd.php?t=' + ts),
+                    fetch('api/get_apbn.php?t=' + ts)
                 ]);
 
                 const apbdJson = await apbdRes.json();

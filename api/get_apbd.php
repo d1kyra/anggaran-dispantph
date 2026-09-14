@@ -3,6 +3,9 @@
 require 'koneksi.php';
 
 header("Content-Type: application/json");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0");
 
 try {
     $unitsStmt = $pdo->query("SELECT * FROM apbd_unit ORDER BY urutan ASC");
