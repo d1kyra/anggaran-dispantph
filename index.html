@@ -692,35 +692,72 @@
                 btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memverifikasi...';
             }
 
-            try {
-                const res = await fetch('api/login.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-                const data = await res.json();
+            const isStaticPlatform = window.location.hostname.includes('github.io') || 
+                                     window.location.hostname.includes('vercel.app') || 
+                                     window.location.protocol === 'file:';
 
-                if (res.ok && data.status === 'success') {
-                    localStorage.setItem(STORAGE_KEY_ADMIN, 'true');
-                    const modalEl = document.getElementById('modalLoginAdmin');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if (modalInstance) modalInstance.hide();
-                    showNotification(data.message || "Berhasil masuk! Mengalihkan ke Panel Administrator...");
-                    setTimeout(() => {
-                        window.location.href = data.redirect || "admin.php";
-                    }, 600);
+            let loginSuccess = false;
+            let targetRedirect = isStaticPlatform ? "admin.html" : "admin.php";
+            let responseMessage = "Berhasil masuk! Mengalihkan ke Panel Administrator...";
+
+            // 1. Jika di localhost / server PHP, verifikasi via api/login.php
+            if (!isStaticPlatform) {
+                try {
+                    const res = await fetch('api/login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: u, password: p })
+                    });
+                    const contentType = res.headers.get("content-type") || "";
+                    if (contentType.includes("application/json")) {
+                        const data = await res.json();
+                        if (res.ok && data.status === 'success') {
+                            loginSuccess = true;
+                            targetRedirect = data.redirect || "admin.php";
+                            responseMessage = data.message || responseMessage;
+                        } else {
+                            errorMsg.textContent = data.message || "Username atau password salah!";
+                            errorMsg.classList.remove('d-none');
+                            if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = originalBtnHtml; }
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Backend PHP tidak merespons, beralih ke verifikasi lokal:", err);
+                }
+            }
+
+            // 2. Jika di GitHub Pages / Vercel (platform statis tanpa PHP/MySQL), gunakan verifikasi demo
+            if (!loginSuccess && isStaticPlatform) {
+                if (u === "admin" && p === "perencanaan2026") {
+                    loginSuccess = true;
+                    targetRedirect = "admin.html";
+                    responseMessage = "Berhasil masuk (Mode Demo Statis)! Mengalihkan...";
                 } else {
-                    errorMsg.textContent = data.message || "Username atau password salah!";
+                    errorMsg.textContent = "Username atau password salah!";
                     errorMsg.classList.remove('d-none');
+                    if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = originalBtnHtml; }
+                    return;
                 }
-            } catch (err) {
-                errorMsg.textContent = "Gagal menghubungi server autentikasi.";
+            }
+
+            if (loginSuccess) {
+                localStorage.setItem(STORAGE_KEY_ADMIN, 'true');
+                const modalEl = document.getElementById('modalLoginAdmin');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+                showNotification(responseMessage);
+                setTimeout(() => {
+                    window.location.href = targetRedirect;
+                }, 600);
+            } else {
+                errorMsg.textContent = "Gagal memverifikasi login.";
                 errorMsg.classList.remove('d-none');
-            } finally {
-                if (btnSubmit) {
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerHTML = originalBtnHtml;
-                }
+            }
+
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalBtnHtml;
             }
         }
 

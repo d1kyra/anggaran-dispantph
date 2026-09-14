@@ -936,33 +936,60 @@
             const errorMsg = document.getElementById('loginErrorMsg');
             errorMsg.classList.add('d-none');
 
-            try {
-                const res = await fetch('api/login.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-                const data = await res.json();
+            const isStaticPlatform = window.location.hostname.includes('github.io') || 
+                                     window.location.hostname.includes('vercel.app') || 
+                                     window.location.protocol === 'file:';
 
-                if (res.ok && data.status === 'success') {
-                    isAdmin = true;
-                    localStorage.setItem(STORAGE_KEY_ADMIN, 'true');
-                    updateAdminUI();
-                    const modalEl = document.getElementById('modalLoginAdmin');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if (modalInstance) modalInstance.hide();
-                    showNotification(data.message || "Berhasil masuk sebagai Administrator!");
-                    if (typeof pendingAdminAction === 'function') {
-                        const action = pendingAdminAction;
-                        pendingAdminAction = null;
-                        action();
+            let loginSuccess = false;
+
+            if (!isStaticPlatform) {
+                try {
+                    const res = await fetch('api/login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: u, password: p })
+                    });
+                    const contentType = res.headers.get("content-type") || "";
+                    if (contentType.includes("application/json")) {
+                        const data = await res.json();
+                        if (res.ok && data.status === 'success') {
+                            loginSuccess = true;
+                        } else {
+                            errorMsg.textContent = data.message || "Username atau password salah!";
+                            errorMsg.classList.remove('d-none');
+                            return;
+                        }
                     }
-                } else {
-                    errorMsg.textContent = data.message || "Username atau password salah!";
-                    errorMsg.classList.remove('d-none');
+                } catch (err) {
+                    console.warn("Backend PHP tidak merespons, beralih ke verifikasi lokal:", err);
                 }
-            } catch (err) {
-                errorMsg.textContent = "Gagal menghubungi server autentikasi.";
+            }
+
+            if (!loginSuccess && isStaticPlatform) {
+                if (u === "admin" && p === "perencanaan2026") {
+                    loginSuccess = true;
+                } else {
+                    errorMsg.textContent = "Username atau password salah!";
+                    errorMsg.classList.remove('d-none');
+                    return;
+                }
+            }
+
+            if (loginSuccess) {
+                isAdmin = true;
+                localStorage.setItem(STORAGE_KEY_ADMIN, 'true');
+                updateAdminUI();
+                const modalEl = document.getElementById('modalLoginAdmin');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+                showNotification("Berhasil masuk sebagai Administrator!");
+                if (typeof pendingAdminAction === 'function') {
+                    const action = pendingAdminAction;
+                    pendingAdminAction = null;
+                    action();
+                }
+            } else {
+                errorMsg.textContent = "Gagal memverifikasi login.";
                 errorMsg.classList.remove('d-none');
             }
         }
