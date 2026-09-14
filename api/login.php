@@ -24,7 +24,13 @@ $username = trim((string)$input['username']);
 $password = trim((string)$input['password']);
 
 $expectedUser = getenv('ADMIN_USER') ?: 'admin';
-$expectedPass = getenv('ADMIN_PASS') ?: 'perencanaan2026';
+$expectedPass = getenv('ADMIN_PASS');
+
+if (empty($expectedPass)) {
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Konfigurasi server belum lengkap: ADMIN_PASS belum diatur di file .env."]);
+    exit;
+}
 
 // Gunakan hash_equals untuk mencegah timing attack
 $isUserValid = hash_equals($expectedUser, $username);
