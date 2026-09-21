@@ -2,12 +2,20 @@
 // api/save_periode.php
 require 'koneksi.php';
 require_once 'auth_middleware.php';
+require_once 'security.php';
 
+emitSecurityHeaders();
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Method not allowed"]);
+    exit;
+}
+
+if (!validateCsrfToken()) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Token keamanan tidak valid. Silakan muat ulang halaman dan coba lagi."]);
     exit;
 }
 
@@ -20,13 +28,13 @@ if (!isset($input['type']) || !isset($input['periode'])) {
 }
 
 $type = strtoupper(trim((string)$input['type']));
-$periode = strip_tags(trim((string)$input['periode']));
-$key = isset($input['key']) ? strip_tags(trim((string)$input['key'])) : null;
-$namaKegiatan = isset($input['namaKegiatan']) ? strip_tags(trim((string)$input['namaKegiatan'])) : null;
+$periode = trim(strip_tags((string)$input['periode']));
+$key = isset($input['key']) ? trim(strip_tags((string)$input['key'])) : null;
+$namaKegiatan = isset($input['namaKegiatan']) ? trim(strip_tags((string)$input['namaKegiatan'])) : null;
 
-if (empty($periode)) {
+if (empty($periode) || strlen($periode) > 100) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Nama periode tidak boleh kosong"]);
+    echo json_encode(["status" => "error", "message" => "Nama periode tidak valid atau melebihi batas 100 karakter."]);
     exit;
 }
 
@@ -40,6 +48,8 @@ try {
 
         $stmt = $pdo->prepare("INSERT INTO app_settings (setting_key, setting_value) VALUES ('periode_aktif', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         $stmt->execute([$periode, $periode]);
+
+        logAuditEvent('periode_updated', ['type' => 'GLOBAL', 'periode' => $periode]);
 
         echo json_encode([
             "status" => "success",
@@ -58,6 +68,8 @@ try {
 
         $stmt = $pdo->prepare("UPDATE apbd_unit SET periode_custom = ? WHERE kode = ?");
         $stmt->execute([$periode, $key]);
+
+        logAuditEvent('periode_updated', ['type' => 'APBD', 'key' => $key, 'periode' => $periode]);
 
         echo json_encode([
             "status" => "success",
@@ -97,6 +109,8 @@ try {
                 $pdo->prepare("UPDATE apbn_kegiatan SET periode_custom = ? WHERE LOWER(nama_kegiatan) LIKE '%lip%' OR LOWER(nama_kegiatan) LIKE '%lahan%' OR LOWER(nama_kegiatan) LIKE '%irigasi%'")->execute([$periode]);
             }
         }
+
+        logAuditEvent('periode_updated', ['type' => 'APBN', 'key' => $key, 'nama_kegiatan' => $namaKegiatan, 'periode' => $periode]);
 
         echo json_encode([
             "status" => "success",

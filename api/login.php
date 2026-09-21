@@ -1,15 +1,21 @@
 <?php
 // api/login.php
 // Endpoint autentikasi administrator sisi server
-
-header("Content-Type: application/json");
-
-// Muat konfigurasi database & .env
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'koneksi.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'security.php';
+
+emitSecurityHeaders();
+header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Method not allowed"]);
+    exit;
+}
+
+if (rateLimitExceeded('admin_login', 5, 600)) {
+    http_response_code(429);
+    echo json_encode(["status" => "error", "message" => "Terlalu banyak percobaan login. Silakan tunggu beberapa menit lalu coba lagi."]);
     exit;
 }
 
@@ -20,11 +26,11 @@ if (!$input || !isset($input['username']) || !isset($input['password'])) {
     exit;
 }
 
-$username = trim((string)$input['username']);
-$password = trim((string)$input['password']);
+$username = trim((string) $input['username']);
+$password = trim((string) $input['password']);
 
-$expectedUser = getEnvValue('ADMIN_USER', 'admin');
-$expectedPass = getEnvValue('ADMIN_PASS', 'perencanaan2026');
+$expectedUser = function_exists('getEnvValue') ? getEnvValue('ADMIN_USER', 'admin') : (getenv('ADMIN_USER') ?: 'admin');
+$expectedPass = function_exists('getEnvValue') ? getEnvValue('ADMIN_PASS', null) : getenv('ADMIN_PASS');
 
 if (empty($expectedPass)) {
     http_response_code(500);
@@ -32,27 +38,19 @@ if (empty($expectedPass)) {
     exit;
 }
 
-// Gunakan hash_equals untuk mencegah timing attack
 $isUserValid = hash_equals($expectedUser, $username);
-$isPassValid = hash_equals($expectedPass, $password);
+$isPassValid = normalizePasswordCheck($expectedPass, $password);
 
 if ($isUserValid && $isPassValid) {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-        session_start();
-    }
-
-    // Regenerasi session id untuk mencegah session fixation attack
+    ensureSecureSession();
     session_regenerate_id(true);
 
     $_SESSION['admin_logged_in'] = true;
     $_SESSION['admin_user'] = $username;
     $_SESSION['login_time'] = time();
+    $_SESSION['last_activity'] = time();
+
+    logAuditEvent('admin_login_success', ['username' => $username]);
 
     echo json_encode([
         "status" => "success",
@@ -60,9 +58,8 @@ if ($isUserValid && $isPassValid) {
         "redirect" => "admin.php"
     ]);
 } else {
-    // Beri sedikit delay untuk memitigasi brute-force
-    usleep(250000); // 0.25 detik
-
+    logAuditEvent('admin_login_failed', ['username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown']);
+    usleep(250000);
     http_response_code(401);
     echo json_encode([
         "status" => "error",

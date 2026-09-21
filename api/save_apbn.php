@@ -2,12 +2,20 @@
 // api/save_apbn.php
 require 'koneksi.php';
 require_once 'auth_middleware.php';
+require_once 'security.php';
 
+emitSecurityHeaders();
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Method not allowed"]);
+    exit;
+}
+
+if (!validateCsrfToken()) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Token keamanan tidak valid. Silakan muat ulang halaman dan coba lagi."]);
     exit;
 }
 
@@ -19,19 +27,25 @@ if (!isset($input['tahun']) || !isset($input['kodeSatker'])) {
     exit;
 }
 
-$id = isset($input['id']) ? (int)$input['id'] : -1;
-$tahun = (int)$input['tahun'];
-$kode_satker = strip_tags(trim((string)($input['kodeSatker'] ?? '')));
-$nama_kegiatan = strip_tags(trim((string)($input['namaKegiatan'] ?? '')));
-$kewenangan = strip_tags(trim((string)($input['kewenangan'] ?? '')));
-$pagu_dipa = $input['paguDipa'] ?? 0;
-$pagu_revisi = $input['paguRevisi'] ?? 0;
-$pagu_setelah_blokir = $input['paguSetelahBlokir'] ?? 0;
-$realisasi_rp = $input['realisasiRp'] ?? 0;
-$realisasi_persen = $input['realisasiPersen'] ?? 0;
-$realisasi_fisik = $input['realisasiFisik'] ?? 0;
-$sisa_anggaran = $input['sisaAnggaran'] ?? 0;
-$periode_custom = !empty($input['periodeCustom']) ? strip_tags(trim((string)$input['periodeCustom'])) : null;
+$id = isset($input['id']) ? (int) $input['id'] : -1;
+$tahun = (int) $input['tahun'];
+$kode_satker = preg_replace('/[^A-Za-z0-9_.-]/', '', trim((string) ($input['kodeSatker'] ?? '')));
+$nama_kegiatan = trim((string) ($input['namaKegiatan'] ?? ''));
+$kewenangan = strtoupper(trim((string) ($input['kewenangan'] ?? '')));
+$pagu_dipa = (float) ($input['paguDipa'] ?? 0);
+$pagu_revisi = (float) ($input['paguRevisi'] ?? 0);
+$pagu_setelah_blokir = (float) ($input['paguSetelahBlokir'] ?? 0);
+$realisasi_rp = (float) ($input['realisasiRp'] ?? 0);
+$realisasi_persen = (float) ($input['realisasiPersen'] ?? 0);
+$realisasi_fisik = (float) ($input['realisasiFisik'] ?? 0);
+$sisa_anggaran = (float) ($input['sisaAnggaran'] ?? 0);
+$periode_custom = !empty($input['periodeCustom']) ? trim(strip_tags((string) $input['periodeCustom'])) : null;
+
+if ($tahun < 2000 || $tahun > 2100 || $kode_satker === '' || strlen($nama_kegiatan) < 2 || strlen($nama_kegiatan) > 255) {
+    http_response_code(400);
+    echo json_encode(["status" => "error", "message" => "Data kegiatan tidak valid."]);
+    exit;
+}
 
 try {
     $hasPeriodeCol = false;
@@ -48,12 +62,10 @@ try {
     }
 
     if ($id > 0) {
-        // Cek apakah ID exist
         $check = $pdo->prepare("SELECT id FROM apbn_kegiatan WHERE id = ?");
         $check->execute([$id]);
-        
+
         if ($check->rowCount() > 0) {
-            // Update
             if ($hasPeriodeCol) {
                 $stmt = $pdo->prepare("
                     UPDATE apbn_kegiatan SET 
@@ -85,13 +97,12 @@ try {
                     $id
                 ]);
             }
-            
+
             echo json_encode(["status" => "success", "message" => "Data APBN berhasil diperbarui"]);
             exit;
         }
     }
-    
-    // Insert jika ID = -1 atau ID tidak ditemukan
+
     if ($hasPeriodeCol) {
         $stmt = $pdo->prepare("
             INSERT INTO apbn_kegiatan (
@@ -122,9 +133,11 @@ try {
         ]);
     }
 
+    logAuditEvent('apbn_saved', ['id' => $id, 'tahun' => $tahun, 'kode_satker' => $kode_satker, 'nama_kegiatan' => $nama_kegiatan]);
     echo json_encode(["status" => "success", "message" => "Data APBN berhasil ditambahkan", "new_id" => $pdo->lastInsertId()]);
 
 } catch (Exception $e) {
+    logAuditEvent('apbn_save_failed', ['id' => $id, 'tahun' => $tahun, 'error' => $e->getMessage()]);
     http_response_code(500);
     echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }

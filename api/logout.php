@@ -2,9 +2,16 @@
 // api/logout.php
 // Endpoint logout untuk menghancurkan session administrator
 
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'security.php';
+
+emitSecurityHeaders();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$user = $_SESSION['admin_user'] ?? 'guest';
+logAuditEvent('admin_logout', ['username' => $user]);
 
 $_SESSION = [];
 

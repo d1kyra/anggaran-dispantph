@@ -43,12 +43,29 @@ $user = getEnvValue('DB_USER', 'root');
 $pass = getEnvValue('DB_PASS', '');
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
-    // Atur error mode menjadi exception
+    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass, [
+        PDO::ATTR_TIMEOUT => 3
+    ]);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // Set default fetch mode ke associative array
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+    // Fallback otomatis ke MySQL lokal Laragon jika gagal koneksi di lingkungan development
+    $isLocal = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1', '::1']) || 
+               strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false || 
+               strpos($_SERVER['HTTP_HOST'] ?? '', '.test') !== false ||
+               php_sapi_name() === 'cli';
+
+    if ($isLocal && ($host !== 'localhost' && $host !== '127.0.0.1')) {
+        try {
+            $pdo = new PDO("mysql:host=localhost;dbname=sisfor_anggaran;charset=utf8", "root", "");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            return;
+        } catch (PDOException $exLocal) {
+            // Lanjut ke penanganan error di bawah
+        }
+    }
+
     // Catat detail error ke log server untuk debugging internal
     error_log("Database connection error: " . $e->getMessage());
     

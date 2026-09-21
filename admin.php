@@ -1,20 +1,19 @@
 <?php
 // admin.php - Panel Administrator SISFOR Anggaran
-if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path' => '/',
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
-    session_start();
-}
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'security.php';
 
-// Proteksi Server-Side: Wajib login terlebih dahulu
-if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: index.html?login=required");
+emitSecurityHeaders();
+ensureSecureSession();
+
+// Proteksi server-side dengan timeout sesi yang sama seperti endpoint API.
+if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true || isSessionExpired()) {
+    $_SESSION = [];
+    session_destroy();
+    header("Location: index.html?auth=required");
     exit;
 }
+
+refreshSessionActivity();
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -220,15 +219,6 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                 </div>
 
                 <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <!-- Dynamic Period Selector Pill -->
-                    <div class="periode-badge-pill" id="btnUbahPeriode" onclick="openUbahPeriodeModal()"
-                        title="Klik untuk mengubah periode bulan laporan realisasi (Admin)">
-                        <i class="fa-regular fa-calendar-check text-success"></i>
-                        <span>Periode:</span>
-                        <strong id="labelPeriodeAktif">s.d Juni</strong>
-                        <i class="fa-solid fa-pen-to-square ms-1 small text-secondary"></i>
-                    </div>
-
                     <!-- APBD / APBN Switcher -->
                     <div class="toggle-container">
                         <button id="btnAPBD" class="btn btn-toggle-source active-apbd" onclick="showTabAPBD()">
@@ -280,6 +270,11 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                     <button class="btn-crud-add" id="btnTambahData" onclick="openCreateModal()">
                         <i class="fa-solid fa-plus"></i>
                         <span id="btnTambahText">Tambah Unit APBD</span>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-1 px-3 py-2 rounded-3 shadow-sm" onclick="openUbahPeriodeModal()" title="Ubah periode bulan laporan realisasi (Admin)">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>Ubah Periode</span>
                     </button>
 
                     <button class="btn-crud-reset" onclick="resetDataToDefault()"
@@ -338,24 +333,19 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                             <i class="fa-solid fa-info-circle text-success me-1"></i>
                             Menampilkan rincian alokasi dan realisasi anggaran multiyears.
                         </div>
-                        <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2"
-                            id="matrixPeriodeBadge">
-                            Periode Realisasi: <strong id="matrixPeriodeLabel">s.d Juni</strong>
-                        </div>
                     </div>
                     <div class="table-responsive touch-scroll">
                         <table
                             class="table table-bordered table-striped align-middle mb-0 text-center modal-matrix-table">
                             <thead class="table-dark small text-uppercase" id="matrixTableHead">
                                 <tr>
-                                    <th style="width: 25%; min-width: 170px;">Komponen Anggaran <span
-                                            style="text-transform: none;">(Rp)</span></th>
-                                    <th>2022</th>
-                                    <th>2023</th>
-                                    <th>2024</th>
-                                    <th>2025</th>
-                                    <th id="thMatrix2026">2026 <span style="text-transform: none !important;">(<span style="text-transform: lowercase !important; font-weight: 700;">s.d</span> Juni)</span></th>
-                                    <th class="bg-success text-white">JUMLAH</th>
+                                    <th style="width: 25%; min-width: 170px;">Komponen Anggaran</th>
+                                    <th>2022 <span style="text-transform: none !important;">(Rp)</span></th>
+                                    <th>2023 <span style="text-transform: none !important;">(Rp)</span></th>
+                                    <th>2024 <span style="text-transform: none !important;">(Rp)</span></th>
+                                    <th>2025 <span style="text-transform: none !important;">(Rp)</span></th>
+                                    <th id="thMatrix2026">2026 <span style="text-transform: none !important;">(Rp)</span> <span style="text-transform: none !important;">(<span style="text-transform: lowercase !important; font-weight: 700;">s.d</span> Juni)</span></th>
+                                    <th class="bg-success text-white">JUMLAH <span style="text-transform: none !important;">(Rp)</span></th>
                                 </tr>
                             </thead>
                             <tbody id="matrixTableBody" class="small"></tbody>
@@ -484,10 +474,6 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                             <i class="fa-solid fa-circle-info text-success me-1"></i>
                             Rincian alokasi dan realisasi anggaran APBN multiyears per kewenangan (DK/TP). Anda dapat
                             mengedit atau menghapus data spesifik per tahun dan kewenangan.
-                        </div>
-                        <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2"
-                            id="apbnMatrixPeriodeBadge">
-                            Periode Realisasi: <strong id="apbnMatrixPeriodeLabel">s.d Juni</strong>
                         </div>
                     </div>
                     <div class="table-responsive touch-scroll mb-3">
@@ -1046,6 +1032,29 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
         // Variabel kerja saat membuka modal edit APBD multiyears
         let tempUnitEditData = {};
         let currentEditingYear = "2026";
+        let csrfToken = '';
+
+        async function fetchCsrfToken() {
+            try {
+                const res = await fetch('api/csrf.php', { method: 'GET', headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                if (res.ok && data && data.csrfToken) {
+                    csrfToken = data.csrfToken;
+                    return;
+                }
+            } catch (err) {
+                console.warn('Failed to fetch CSRF token:', err);
+            }
+            csrfToken = '';
+        }
+
+        function buildJsonHeaders(extra = {}) {
+            const headers = { 'Content-Type': 'application/json', ...extra };
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+            return headers;
+        }
 
         // ==========================================
         // INISIALISASI DATA & AUTH
@@ -1053,8 +1062,10 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
         async function initData() {
             const savedPeriode = localStorage.getItem(STORAGE_KEY_PERIODE);
             periodeAktif = savedPeriode ? savedPeriode : "s.d Juni";
-            document.getElementById('labelPeriodeAktif').textContent = periodeAktif;
+            const lblPeriode = document.getElementById('labelPeriodeAktif');
+            if (lblPeriode) lblPeriode.textContent = periodeAktif;
 
+            await fetchCsrfToken();
             await loadDataFromServer();
         }
 
@@ -1308,7 +1319,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
 
                 const res = await fetch('api/save_periode.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: buildJsonHeaders(),
                     body: JSON.stringify(payload)
                 });
                 const json = await res.json();
@@ -1350,7 +1361,8 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                 } else {
                     periodeAktif = newPeriode;
                     localStorage.setItem(STORAGE_KEY_PERIODE, periodeAktif);
-                    document.getElementById('labelPeriodeAktif').textContent = periodeAktif;
+                    const lblPeriode = document.getElementById('labelPeriodeAktif');
+                    if (lblPeriode) lblPeriode.textContent = periodeAktif;
                     renderMenuCards();
                     renderAPBNCards();
                     if (currentViewingUnitKey && document.getElementById('matrixModal') && document.getElementById('matrixModal').classList.contains('show')) {
@@ -1748,7 +1760,8 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             const apbnPeriode = group.periodeCustom || periodeAktif;
 
             document.getElementById('apbnMatrixTitle').innerHTML = `<i class="fa-solid fa-folder-open text-warning me-2"></i> Matriks [APBN] - ${group.nama}`;
-            document.getElementById('apbnMatrixPeriodeLabel').textContent = apbnPeriode;
+            const apbnPeriodeEl = document.getElementById('apbnMatrixPeriodeLabel');
+            if (apbnPeriodeEl) apbnPeriodeEl.textContent = apbnPeriode;
 
             const thead = document.getElementById('apbnMatrixTableHead');
             const tbody = document.getElementById('apbnMatrixTableBody');
@@ -1759,15 +1772,15 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             if (tahunList.length === 0) return;
 
             // Header
-            let headerHtml = `<tr><th style="width: 28%; min-width: 200px;">Komponen Anggaran <span style="text-transform: none;">(Rp)</span></th>`;
+            let headerHtml = `<tr><th style="width: 28%; min-width: 200px;">Komponen Anggaran</th>`;
             tahunList.forEach(th => {
                 if (th === tahunList[tahunList.length - 1]) {
-                    headerHtml += `<th>${th} ${formatPeriodeHeaderHtml(apbnPeriode)}</th>`;
+                    headerHtml += `<th>${th} <span style="text-transform: none !important;">(Rp)</span> ${formatPeriodeHeaderHtml(apbnPeriode)}</th>`;
                 } else {
-                    headerHtml += `<th>${th}</th>`;
+                    headerHtml += `<th>${th} <span style="text-transform: none !important;">(Rp)</span></th>`;
                 }
             });
-            headerHtml += `<th class="bg-success text-white">JUMLAH</th></tr>`;
+            headerHtml += `<th class="bg-success text-white">JUMLAH <span style="text-transform: none !important;">(Rp)</span></th></tr>`;
             thead.innerHTML = headerHtml;
 
             const komponenAPBN = [
@@ -2123,7 +2136,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                         await Promise.all(idsToDelete.map(id =>
                             fetch('api/delete_apbn.php', {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: buildJsonHeaders(),
                                 body: JSON.stringify({ id: id })
                             })
                         ));
@@ -2262,7 +2275,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                     try {
                         const res = await fetch('api/delete_apbn.php', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: buildJsonHeaders(),
                             body: JSON.stringify({ id: id })
                         });
                         const json = await res.json();
@@ -2481,7 +2494,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             try {
                 const res = await fetch('api/save_apbn.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: buildJsonHeaders(),
                     body: JSON.stringify(record)
                 });
                 const json = await res.json();
@@ -2531,7 +2544,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                     try {
                         const res = await fetch('api/delete_apbn.php', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: buildJsonHeaders(),
                             body: JSON.stringify({ id: item.id })
                         });
                         const json = await res.json();
@@ -2768,7 +2781,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             try {
                 const res = await fetch('api/save_apbd.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: buildJsonHeaders(),
                     body: JSON.stringify({
                         kode: targetKey,
                         nama: nama,
@@ -2802,7 +2815,7 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                     try {
                         const res = await fetch('api/delete_apbd.php', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: buildJsonHeaders(),
                             body: JSON.stringify({ kode: key })
                         });
                         const json = await res.json();
@@ -2832,7 +2845,8 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             const unitPeriode = unit.periodeCustom || periodeAktif;
 
             document.getElementById('modalTitle').innerHTML = `<i class="fa fa-folder-open text-warning me-2"></i> Matriks [APBD] - ${unit.nama}`;
-            document.getElementById('matrixPeriodeLabel').textContent = unitPeriode;
+            const matrixPeriodeEl = document.getElementById('matrixPeriodeLabel');
+            if (matrixPeriodeEl) matrixPeriodeEl.textContent = unitPeriode;
 
             const thead = document.getElementById('matrixTableHead');
             const tbody = document.getElementById('matrixTableBody');
@@ -2844,15 +2858,15 @@ if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
             if (tahunList.length === 0) tahunList = ['2022', '2023', '2024', '2025', '2026'];
 
             // Render Header Dinamis
-            let headerHtml = `<tr><th style="width: 25%; min-width: 170px;">Komponen Anggaran <span style="text-transform: none;">(Rp)</span></th>`;
+            let headerHtml = `<tr><th style="width: 25%; min-width: 170px;">Komponen Anggaran</th>`;
             tahunList.forEach(th => {
                 if (th === '2026' || th === tahunList[tahunList.length - 1]) {
-                    headerHtml += `<th id="thMatrix2026">${th} ${formatPeriodeHeaderHtml(unitPeriode)}</th>`;
+                    headerHtml += `<th id="thMatrix2026">${th} <span style="text-transform: none !important;">(Rp)</span> ${formatPeriodeHeaderHtml(unitPeriode)}</th>`;
                 } else {
-                    headerHtml += `<th>${th}</th>`;
+                    headerHtml += `<th>${th} <span style="text-transform: none !important;">(Rp)</span></th>`;
                 }
             });
-            headerHtml += `<th class="bg-success text-white">JUMLAH</th></tr>`;
+            headerHtml += `<th class="bg-success text-white">JUMLAH <span style="text-transform: none !important;">(Rp)</span></th></tr>`;
             thead.innerHTML = headerHtml;
 
             const komponenList = [
