@@ -1,5 +1,6 @@
-CREATE DATABASE IF NOT EXISTS sisfor_anggaran;
-USE sisfor_anggaran;
+-- CREATE DATABASE IF NOT EXISTS sisfor_anggaran;
+-- USE sisfor_anggaran;
+
 
 CREATE TABLE IF NOT EXISTS apbd_unit (
     kode VARCHAR(20) PRIMARY KEY,
@@ -39,7 +40,13 @@ CREATE TABLE IF NOT EXISTS apbn_kegiatan (
     sisa_anggaran BIGINT DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS app_settings (
+    setting_key VARCHAR(50) PRIMARY KEY,
+    setting_value TEXT NOT NULL
+);
+
 -- DATA INSERTION
+INSERT IGNORE INTO app_settings (setting_key, setting_value) VALUES ('periode_aktif', 's.d Juni');
 INSERT IGNORE INTO apbd_unit (kode, nama, urutan) VALUES ('1', 'Sekretariat Dinas', 1);
 INSERT IGNORE INTO apbd_anggaran (unit_kode, tahun, pagu_awal, pagu_anggaran, pagu_efisiensi, pagu_apbd, pagu_tahunan, realisasi_keuangan, realisasi_persen, realisasi_fisik) VALUES ('1', 2022, 49657783366, 58060, 0, 49657841426, 49657841426, 44930032264, 90.48, 92.5);
 INSERT IGNORE INTO apbd_anggaran (unit_kode, tahun, pagu_awal, pagu_anggaran, pagu_efisiensi, pagu_apbd, pagu_tahunan, realisasi_keuangan, realisasi_persen, realisasi_fisik) VALUES ('1', 2023, 65262163115, -10843519551, 0, 54418643564, 54418643564, 49812034551, 91.53, 96);

@@ -616,7 +616,15 @@
                 ]);
 
                 const apbdJson = await apbdRes.json();
-                if (apbdJson.status === 'success') activeAPBD = apbdJson.data;
+                if (apbdJson.status === 'success') {
+                    activeAPBD = apbdJson.data;
+                    if (apbdJson.periodeAktif) {
+                        periodeAktif = apbdJson.periodeAktif;
+                        localStorage.setItem(STORAGE_KEY_PERIODE, periodeAktif);
+                        const labelEl = document.getElementById('labelPeriodeAktif');
+                        if (labelEl) labelEl.textContent = periodeAktif;
+                    }
+                }
 
                 const apbnJson = await apbnRes.json();
                 if (apbnJson.status === 'success') activeAPBN = apbnJson.data;
@@ -1719,7 +1727,7 @@
             initData();
             showTabAPBD();
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('login') === 'required') {
+            if (urlParams.get('login') === 'required' || urlParams.get('auth') === 'required') {
                 openLoginModal();
             }
 
@@ -1737,6 +1745,11 @@
                     if (apbnPercentChartInstance) apbnPercentChartInstance.resize();
                 });
             }
+
+            // Sinkronisasi otomatis saat user kembali fokus ke tab/browser
+            window.addEventListener('focus', function () {
+                loadDataFromServer();
+            });
         };
     </script>
 </body>

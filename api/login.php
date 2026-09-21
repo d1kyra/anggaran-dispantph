@@ -23,8 +23,8 @@ if (!$input || !isset($input['username']) || !isset($input['password'])) {
 $username = trim((string)$input['username']);
 $password = trim((string)$input['password']);
 
-$expectedUser = getenv('ADMIN_USER') ?: 'admin';
-$expectedPass = getenv('ADMIN_PASS');
+$expectedUser = getEnvValue('ADMIN_USER', 'admin');
+$expectedPass = getEnvValue('ADMIN_PASS', 'perencanaan2026');
 
 if (empty($expectedPass)) {
     http_response_code(500);

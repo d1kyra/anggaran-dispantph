@@ -8,6 +8,25 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 try {
+    // Pastikan tabel app_settings tersedia
+    $periodeAktif = "s.d Juni";
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS app_settings (
+            setting_key VARCHAR(50) PRIMARY KEY,
+            setting_value TEXT NOT NULL
+        )");
+        $setStmt = $pdo->query("SELECT setting_value FROM app_settings WHERE setting_key = 'periode_aktif'");
+        if ($setRow = $setStmt->fetch()) {
+            if (!empty($setRow['setting_value'])) {
+                $periodeAktif = $setRow['setting_value'];
+            }
+        } else {
+            $pdo->exec("INSERT INTO app_settings (setting_key, setting_value) VALUES ('periode_aktif', 's.d Juni')");
+        }
+    } catch (Exception $eSet) {
+        // Fallback ke default jika ada kendala
+    }
+
     $unitsStmt = $pdo->query("SELECT * FROM apbd_unit ORDER BY urutan ASC");
     $units = $unitsStmt->fetchAll();
 
@@ -41,7 +60,11 @@ try {
         }
     }
 
-    echo json_encode(["status" => "success", "data" => $result]);
+    echo json_encode([
+        "status" => "success",
+        "periodeAktif" => $periodeAktif,
+        "data" => $result
+    ]);
 
 } catch (Exception $e) {
     error_log("get_apbd error: " . $e->getMessage());

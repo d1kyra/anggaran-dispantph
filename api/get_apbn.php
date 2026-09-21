@@ -36,7 +36,21 @@ try {
         ];
     }
 
-    echo json_encode(["status" => "success", "data" => $result]);
+    $periodeAktif = "s.d Juni";
+    try {
+        $setStmt = $pdo->query("SELECT setting_value FROM app_settings WHERE setting_key = 'periode_aktif'");
+        if ($setRow = $setStmt->fetch()) {
+            if (!empty($setRow['setting_value'])) {
+                $periodeAktif = $setRow['setting_value'];
+            }
+        }
+    } catch (Exception $eSet) {}
+
+    echo json_encode([
+        "status" => "success",
+        "periodeAktif" => $periodeAktif,
+        "data" => $result
+    ]);
 
 } catch (Exception $e) {
     error_log("get_apbn error: " . $e->getMessage());

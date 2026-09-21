@@ -15,7 +15,7 @@ if (!function_exists('loadEnvFile')) {
                 $val = trim($val);
                 $val = trim($val, "\"'");
                 if (getenv($key) === false) {
-                    putenv("$key=$val");
+                    @putenv("$key=$val");
                     $_ENV[$key] = $val;
                     $_SERVER[$key] = $val;
                 }
@@ -24,13 +24,23 @@ if (!function_exists('loadEnvFile')) {
     }
 }
 
+// Fungsi pembantu untuk mengambil nilai environment dengan fallback
+if (!function_exists('getEnvValue')) {
+    function getEnvValue($key, $default = null) {
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') return $_ENV[$key];
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') return $_SERVER[$key];
+        $val = getenv($key);
+        return ($val !== false && $val !== '') ? $val : $default;
+    }
+}
+
 // Muat konfigurasi dari .env di root proyek
 loadEnvFile(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env');
 
-$host = getenv('DB_HOST') ?: 'localhost';
-$db   = getenv('DB_NAME') ?: 'sisfor_anggaran';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$host = getEnvValue('DB_HOST', 'localhost');
+$db   = getEnvValue('DB_NAME', 'sisfor_anggaran');
+$user = getEnvValue('DB_USER', 'root');
+$pass = getEnvValue('DB_PASS', '');
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);

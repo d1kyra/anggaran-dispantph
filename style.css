@@ -253,6 +253,7 @@ body {
 .hero-title .highlight-text {
     background: linear-gradient(135deg, #a5d6a7 0%, #fbc02d 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
