@@ -48,14 +48,23 @@ if ($isUserValid && $isPassValid) {
     $_SESSION['admin_logged_in'] = true;
     $_SESSION['admin_user'] = $username;
     $_SESSION['login_time'] = time();
+    // Simpan metadata sesi dari server agar tidak bisa dimanipulasi dari browser.
+    $_SESSION['admin_login_ip'] = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $_SESSION['last_activity'] = time();
 
-    logAuditEvent('admin_login_success', ['username' => $username]);
+    logAuditEvent('admin_login_success', [
+        'username' => $username,
+        'login_time' => $_SESSION['login_time'],
+        'ip' => $_SESSION['admin_login_ip']
+    ]);
+    if (function_exists('clearRateLimit')) {
+        clearRateLimit('admin_login');
+    }
 
     echo json_encode([
         "status" => "success",
         "message" => "Login berhasil! Mengalihkan ke panel administrator...",
-        "redirect" => "admin.php"
+        "redirect" => "admin_dashboard.php"
     ]);
 } else {
     logAuditEvent('admin_login_failed', ['username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown']);

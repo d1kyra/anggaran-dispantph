@@ -27,6 +27,20 @@ try {
         // Fallback ke default jika ada kendala
     }
 
+    // Pastikan kolom show_in_hero dan icon tersedia di tabel apbd_unit
+    try {
+        $checkCols = $pdo->query("SHOW COLUMNS FROM apbd_unit LIKE 'show_in_hero'");
+        if ($checkCols->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE apbd_unit ADD COLUMN show_in_hero TINYINT(1) DEFAULT 1");
+        }
+        $checkIcon = $pdo->query("SHOW COLUMNS FROM apbd_unit LIKE 'icon'");
+        if ($checkIcon->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE apbd_unit ADD COLUMN icon VARCHAR(50) DEFAULT 'fa-building-user'");
+        }
+    } catch (Exception $eCol) {
+        // Fallback jika tidak memiliki hak alter
+    }
+
     $unitsStmt = $pdo->query("SELECT * FROM apbd_unit ORDER BY urutan ASC");
     $units = $unitsStmt->fetchAll();
 
@@ -34,8 +48,13 @@ try {
 
     foreach ($units as $unit) {
         $kode = $unit['kode'];
+        $showInHero = isset($unit['show_in_hero']) ? (int)$unit['show_in_hero'] : 1;
+        $icon = !empty($unit['icon']) ? $unit['icon'] : 'fa-building-user';
+
         $result[$kode] = [
-            "nama" => $unit['nama']
+            "nama" => $unit['nama'],
+            "showInHero" => $showInHero,
+            "icon" => $icon
         ];
         if (!empty($unit['periode_custom'])) {
             $result[$kode]["periodeCustom"] = $unit['periode_custom'];

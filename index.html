@@ -23,10 +23,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom Style System -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3.2">
     <style>
         .touch-scroll {
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* Dedicated Navbar Button Styling (Embedded to prevent browser cache lag) */
+        .btn-login-nav {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 6px 16px 6px 10px !important;
+            height: 38px !important;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important;
+            border: 1px solid rgba(165, 214, 167, 0.45) !important;
+            border-radius: 50px !important;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-size: 0.86rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.2px !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            white-space: nowrap !important;
+            cursor: pointer !important;
+        }
+
+        .btn-login-nav:hover {
+            color: #ffffff !important;
+            text-decoration: none !important;
+            background: linear-gradient(135deg, #388e3c 0%, #1e6924 100%) !important;
+            border-color: #a5d6a7 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+        }
+
+        .btn-login-nav:active {
+            transform: translateY(0) scale(0.98) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .btn-login-nav .nav-login-icon-badge {
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.16) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #a5d6a7 !important;
+            font-size: 0.8rem !important;
+            transition: all 0.25s ease !important;
+            flex-shrink: 0 !important;
+        }
+
+        .btn-login-nav:hover .nav-login-icon-badge {
+            background: rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            transform: scale(1.1) !important;
+        }
+
+        @media (max-width: 575.98px) {
+            .btn-login-nav {
+                height: 34px !important;
+                padding: 5px 12px 5px 8px !important;
+                font-size: 0.78rem !important;
+                gap: 6px !important;
+            }
+
+            .btn-login-nav .nav-login-icon-badge {
+                width: 20px !important;
+                height: 20px !important;
+                font-size: 0.72rem !important;
+            }
         }
     </style>
 </head>
@@ -38,27 +109,18 @@
          ======================================================================== -->
     <nav class="navbar navbar-dark navbar-custom">
         <div class="container px-3 px-md-4 d-flex align-items-center justify-content-between">
-            <a href="#welcome-section" class="navbar-brand">
-                <div class="brand-badge-icon" onclick="handleLogoSecretClick(event)"
-                    title="Sistem Informasi Anggaran DISPANTPH">
+            <a href="#welcome-section" class="navbar-brand" title="Sistem Informasi Anggaran DISPANTPH">
+                <div class="brand-badge-icon">
                     <i class="fa-solid fa-wheat-awn"></i>
                 </div>
-                <span class="d-none d-sm-inline">Sistem Informasi Anggaran DISPANTPH</span>
-                <span class="d-inline d-sm-none">SISFOR DISPANTPH</span>
+                <span class="d-none d-sm-inline">SIA</span>
+                <span class="d-inline d-sm-none">SIA</span>
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="#welcome-section" class="nav-pill-link">
-                    <i class="fa-solid fa-house"></i>
-                    <span class="d-none d-md-inline">Beranda</span>
-                </a>
-                <a href="#dashboard-section" class="nav-pill-link active-pill-apbd" id="navPillAPBD"
-                    onclick="showTabAPBD()">
-                    <i class="fa-solid fa-building-columns"></i>
-                    <span>APBD</span>
-                </a>
-                <a href="#dashboard-section" class="nav-pill-link" id="navPillAPBN" onclick="showTabAPBN()">
-                    <i class="fa-solid fa-landmark"></i>
-                    <span>APBN</span>
+                <a href="login.php" class="btn-login-nav" title="Login ke Panel Administrator"
+                    style="text-decoration: none !important;">
+                    <span class="nav-login-icon-badge"><i class="fa-solid fa-user-shield"></i></span>
+                    <span style="color: #ffffff !important; font-weight: 600;">Login Admin</span>
                 </a>
             </div>
         </div>
@@ -81,7 +143,7 @@
 
             <h1 class="hero-title">
                 Selamat Datang di <br>
-                <span class="highlight-text">Sistem Informasi Anggaran</span>
+                <span class="highlight-text">Sistem Informasi Anggaran(SIA)</span>
             </h1>
 
             <p class="hero-subtitle">
@@ -89,58 +151,46 @@
                 APBN pada Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur.
             </p>
 
-            <!-- 4 Features Highlight Cards Grid -->
-            <div class="hero-features-grid">
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+            <!-- Dynamic Features Highlight Cards Grid -->
+            <div id="heroFeaturesGrid" class="hero-features-grid">
+                <a href="#dashboard-section" class="hero-feature-card" onclick="filterHeroCard('hero_apbd')" title="Lihat Rekap APBD">
                     <div class="hero-card-icon">
-                        <i class="fa-solid fa-seedling"></i>
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
-                    <div>
-                        <h6 class="hero-card-title">Tanaman Pangan</h6>
-                        <p class="hero-card-desc">Monitoring alokasi dan realisasi program komoditas pangan daerah.</p>
+                    <div class="hero-card-text">
+                        <h6 class="hero-card-title mb-0">APBD 2022-2026</h6>
+                        <span class="hero-card-sub">Rekap Seluruh Unit</span>
                     </div>
                 </a>
 
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+                <a href="#dashboard-section" class="hero-feature-card" onclick="filterHeroCard('hero_sekretariat')" title="Lihat Data Sekretariat">
                     <div class="hero-card-icon">
-                        <i class="fa-solid fa-apple-whole"></i>
+                        <i class="fa-solid fa-building-user"></i>
                     </div>
-                    <div>
-                        <h6 class="hero-card-title">Hortikultura</h6>
-                        <p class="hero-card-desc">Pengawalan anggaran dan capaian komoditas hortikultura unggulan.</p>
+                    <div class="hero-card-text">
+                        <h6 class="hero-card-title mb-0">Sekretariat</h6>
+                        <span class="hero-card-sub">Sekretariat Dinas</span>
                     </div>
                 </a>
 
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
+                <a href="#dashboard-section" class="hero-feature-card" onclick="filterHeroCard('hero_gaji')" title="Lihat Data Gaji & Tunjangan">
                     <div class="hero-card-icon">
-                        <i class="fa-solid fa-chart-pie"></i>
+                        <i class="fa-solid fa-money-check-dollar"></i>
                     </div>
-                    <div>
-                        <h6 class="hero-card-title">APBD Multiyears</h6>
-                        <p class="hero-card-desc">Rekapitulasi terpadu pagu, revisi, realisasi, dan sisa anggaran
-                            2022-2026.</p>
+                    <div class="hero-card-text">
+                        <h6 class="hero-card-title mb-0">Gaji dan Tunjangan</h6>
+                        <span class="hero-card-sub">Gaji & Tunjangan Pegawai</span>
                     </div>
                 </a>
 
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBN()">
+                <a href="#dashboard-section" class="hero-feature-card" onclick="filterHeroCard('hero_apbn')" title="Lihat Rekap APBN">
                     <div class="hero-card-icon">
                         <i class="fa-solid fa-table-list"></i>
                     </div>
-                    <div>
-                        <h6 class="hero-card-title">Realisasi APBN</h6>
-                        <p class="hero-card-desc">Evaluasi kinerja keuangan dan fisik satker per tahun anggaran.</p>
+                    <div class="hero-card-text">
+                        <h6 class="hero-card-title mb-0">APBN 2022-2026</h6>
+                        <span class="hero-card-sub">Rekap Seluruh Satker</span>
                     </div>
-                </a>
-            </div>
-
-            <!-- Floating Scroll Indicator -->
-            <div>
-                <a href="#dashboard-section" class="hero-scroll-prompt">
-                    <span>Gulir ke Bawah untuk Melihat Data</span>
-                    <div class="scroll-mouse-icon">
-                        <div class="scroll-wheel"></div>
-                    </div>
-                    <i class="fa-solid fa-chevron-down animated-bounce"></i>
                 </a>
             </div>
         </div>
@@ -160,26 +210,10 @@
     <section id="dashboard-section" class="dashboard-section">
         <div class="container px-3 px-md-4 pb-5">
 
-            <!-- Header Banner & Toggle -->
-            <div
-                class="header-banner d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                <div>
-                    <h3 class="page-title">Monitoring Anggaran 2022 - 2026</h3>
-                    <p class="page-subtitle">Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur
-                    </p>
-                </div>
-
-                <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <!-- APBD / APBN Switcher -->
-                    <div class="toggle-container">
-                        <button id="btnAPBD" class="btn btn-toggle-source active-apbd" onclick="showTabAPBD()">
-                            <i class="fa-solid fa-building-columns me-1 me-md-2"></i> APBD
-                        </button>
-                        <button id="btnAPBN" class="btn btn-toggle-source inactive" onclick="showTabAPBN()">
-                            <i class="fa-solid fa-landmark me-1 me-md-2"></i> APBN
-                        </button>
-                    </div>
-                </div>
+            <!-- Header Banner -->
+            <div class="header-banner">
+                <h3 class="page-title">Monitoring Anggaran 2022 - 2026</h3>
+                <p class="page-subtitle">Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur</p>
             </div>
 
             <!-- Filter Toolbar (Public View) -->
@@ -194,17 +228,6 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <!-- Live Search Box -->
-                    <div class="search-box-wrapper">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="searchInput" class="form-control form-control-sm search-input"
-                            placeholder="Cari unit kerja / kegiatan..." oninput="handleSearch()">
-                        <button class="btn-clear-search d-none" id="btnClearSearch" onclick="clearSearch()"
-                            title="Hapus pencarian">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-
                     <!-- APBN Year Filter Dropdown -->
                     <div id="filterTahunAPBN" class="d-none align-items-center gap-2">
                         <label class="fw-bold small text-secondary m-0">Tahun:</label>
@@ -217,6 +240,20 @@
                         </select>
                     </div>
                 </div>
+            </div>
+
+            <!-- Filter Aktif dari Sorotan Indicator Banner -->
+            <div id="heroFilterBanner" class="alert alert-success py-2 px-3 mb-3 d-none align-items-center justify-content-between rounded-3 border-0 bg-success bg-opacity-10 text-success-emphasis shadow-sm">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-success fs-5"></i>
+                    <div>
+                        <span class="small text-muted d-block" style="font-size: 0.72rem; line-height: 1;">Filter Sorotan Aktif:</span>
+                        <strong id="heroFilterTitle" class="text-success">Sorotan Terpilih</strong>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-success py-1 px-3 rounded-pill fw-bold" onclick="resetHeroFilter()">
+                    <i class="fa-solid fa-xmark me-1"></i> Tampilkan Semua Unit
+                </button>
             </div>
 
             <!-- TAMPILAN 1: KARTU APBD -->
@@ -272,10 +309,13 @@
                                     <th>2023 <span style="text-transform: none !important;">(Rp)</span></th>
                                     <th>2024 <span style="text-transform: none !important;">(Rp)</span></th>
                                     <th>2025 <span style="text-transform: none !important;">(Rp)</span></th>
-                                    <th id="thMatrix2026">2026 <span style="text-transform: none !important;">(Rp)</span> <span style="text-transform: none !important;">(<span
+                                    <th id="thMatrix2026">2026 <span
+                                            style="text-transform: none !important;">(Rp)</span> <span
+                                            style="text-transform: none !important;">(<span
                                                 style="text-transform: lowercase !important; font-weight: 700;">s.d</span>
                                             Juni)</span></th>
-                                    <th class="bg-success text-white">JUMLAH <span style="text-transform: none !important;">(Rp)</span></th>
+                                    <th class="bg-success text-white">JUMLAH <span
+                                            style="text-transform: none !important;">(Rp)</span></th>
                                 </tr>
                             </thead>
                             <tbody id="matrixTableBody" class="small"></tbody>
@@ -309,24 +349,19 @@
                         <div class="row g-2 mb-3">
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-wallet text-primary me-1"></i> Total Pagu (5 Thn):</span>
+                                    <span class="small text-muted fw-semibold">Total Pagu (5 Thn):</span>
                                     <span class="fw-bold text-dark small" id="kpiChartTotalPagu">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-circle-check text-success me-1"></i> Total Realisasi (5
-                                        Thn):</span>
+                                    <span class="small text-muted fw-semibold">Total Realisasi (5 Thn):</span>
                                     <span class="fw-bold text-success small" id="kpiChartTotalReal">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu (5
-                                        Thn):</span>
+                                    <span class="small text-muted fw-semibold">Sisa Pagu (5 Thn):</span>
                                     <span class="fw-bold text-warning-emphasis small" id="kpiChartTotalSisa">Rp 0</span>
                                 </div>
                             </div>
@@ -423,23 +458,19 @@
                         <div class="row g-2 mb-3">
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-wallet text-success me-1"></i> Total Pagu:</span>
+                                    <span class="small text-muted fw-semibold">Total Pagu:</span>
                                     <span class="fw-bold text-dark small" id="apbnKpiTotalPagu">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-circle-check text-success me-1"></i> Total
-                                        Realisasi:</span>
+                                    <span class="small text-muted fw-semibold">Total Realisasi:</span>
                                     <span class="fw-bold text-success small" id="apbnKpiTotalReal">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu:</span>
+                                    <span class="small text-muted fw-semibold">Sisa Pagu:</span>
                                     <span class="fw-bold text-warning-emphasis small" id="apbnKpiTotalSisa">Rp 0</span>
                                 </div>
                             </div>
@@ -482,55 +513,7 @@
 
 
 
-    <!-- ========================================================================
-         MODAL 4: LOGIN ADMINISTRATOR
-         ======================================================================== -->
-    <div class="modal fade" id="modalLoginAdmin" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0">
-                <div
-                    class="modal-header modal-header-admin py-3 px-3 d-flex justify-content-between align-items-center">
-                    <h6 class="modal-title fw-bold m-0 text-white">
-                        <i class="fa-solid fa-user-shield me-2"></i> Akses Administrator
-                    </h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="formLoginAdmin" onsubmit="handleAdminLogin(event)">
-                    <div class="modal-body p-3">
-                        <div class="alert alert-info py-2 px-3 small mb-3 border-0 bg-info bg-opacity-10 text-dark">
-                            <i class="fa-solid fa-circle-info text-info me-1"></i> Masuk sebagai Admin untuk mengedit
-                            data di dalam folder & sistem.
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">Username</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fa-solid fa-user text-muted"></i></span>
-                                <input type="text" id="adminUsername" class="form-control" placeholder="admin" required
-                                    autocomplete="username">
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold text-secondary">Password</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fa-solid fa-key text-muted"></i></span>
-                                <input type="password" id="adminPassword" class="form-control" placeholder="•••"
-                                    required autocomplete="current-password">
-                            </div>
-                        </div>
-                        <div id="loginErrorMsg" class="text-danger small fw-bold mt-2 d-none">
-                            <i class="fa-solid fa-circle-exclamation me-1"></i> Username atau password salah!
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light px-3 py-2">
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-sm btn-primary px-3 fw-bold">
-                            <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
 
 
 
@@ -579,6 +562,11 @@
         let tempUnitEditData = {};
         let currentEditingYear = "2026";
 
+        // Variabel Hero Cards & Multi-Unit Filter
+        let heroCardsData = [];
+        let heroFilteredUnitKeys = null;
+        let activeHeroCardTitle = '';
+
         // ==========================================
         // INISIALISASI DATA & AUTH
         // ==========================================
@@ -594,9 +582,10 @@
         async function loadDataFromServer() {
             try {
                 const ts = Date.now();
-                const [apbdRes, apbnRes] = await Promise.all([
+                const [apbdRes, apbnRes, heroRes] = await Promise.all([
                     fetch('api/get_apbd.php?t=' + ts),
-                    fetch('api/get_apbn.php?t=' + ts)
+                    fetch('api/get_apbn.php?t=' + ts),
+                    fetch('api/get_hero_cards.php?t=' + ts)
                 ]);
 
                 const apbdJson = await apbdRes.json();
@@ -613,6 +602,15 @@
                 const apbnJson = await apbnRes.json();
                 if (apbnJson.status === 'success') activeAPBN = apbnJson.data;
 
+                try {
+                    const heroJson = await heroRes.json();
+                    if (heroJson.status === 'success' && Array.isArray(heroJson.data)) {
+                        heroCardsData = heroJson.data;
+                    }
+                } catch (heroErr) {
+                    console.warn("Gagal parse hero cards:", heroErr);
+                }
+
                 if (currentModeTitle === "APBD") {
                     renderMenuCards();
                     if (currentViewingUnitKey && document.getElementById('matrixModal').classList.contains('show')) {
@@ -622,13 +620,23 @@
                     groupedAPBN = transformAPBNtoGrouped();
                     renderAPBNCards();
                 }
+                renderHeroCards();
             } catch (error) {
                 console.warn("Server offline, fallback to local data:", error);
                 if (typeof dataAPBD !== 'undefined') activeAPBD = JSON.parse(JSON.stringify(dataAPBD));
                 if (typeof dataAPBN !== 'undefined') activeAPBN = JSON.parse(JSON.stringify(dataAPBN));
+                if (!heroCardsData || heroCardsData.length === 0) {
+                    heroCardsData = [
+                        { id: 'hero_apbd', title: 'APBD 2022-2026', subtitle: 'Rekap Seluruh Unit', icon: 'fa-file-invoice-dollar', type: 'macro', target: 'apbd', unit_keys: [] },
+                        { id: 'hero_sekretariat', title: 'Sekretariat', subtitle: 'Sekretariat Dinas', icon: 'fa-building-user', type: 'units', target: '', unit_keys: ['1'] },
+                        { id: 'hero_gaji', title: 'Gaji dan Tunjangan', subtitle: 'Gaji & Tunjangan Pegawai', icon: 'fa-money-check-dollar', type: 'units', target: '', unit_keys: ['A'] },
+                        { id: 'hero_apbn', title: 'APBN 2022-2026', subtitle: 'Rekap Seluruh Satker', icon: 'fa-table-list', type: 'macro', target: 'apbn', unit_keys: [] }
+                    ];
+                }
                 groupedAPBN = transformAPBNtoGrouped();
                 if (currentModeTitle === "APBD") renderMenuCards();
                 else renderAPBNCards();
+                renderHeroCards();
             }
         }
 
@@ -637,121 +645,10 @@
         function saveAPBN() { }
 
         // ==========================================
-        // LOGIN ADMIN & PENGALIHAN KE admin.php
+        // LOGIN ADMINISTRATOR
         // ==========================================
-        let logoSecretClickCount = 0;
-        let logoSecretTimer = null;
-
-        function handleLogoSecretClick(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            logoSecretClickCount++;
-            if (logoSecretClickCount === 1) {
-                logoSecretTimer = setTimeout(() => {
-                    logoSecretClickCount = 0;
-                    const welcomeEl = document.getElementById('welcome-section');
-                    if (welcomeEl) {
-                        welcomeEl.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }, 400);
-            } else if (logoSecretClickCount >= 2) {
-                clearTimeout(logoSecretTimer);
-                logoSecretClickCount = 0;
-                openLoginModal();
-            }
-        }
-
         function openLoginModal() {
-            document.getElementById('adminUsername').value = "";
-            document.getElementById('adminPassword').value = "";
-            document.getElementById('loginErrorMsg').classList.add('d-none');
-            const modal = new bootstrap.Modal(document.getElementById('modalLoginAdmin'));
-            modal.show();
-        }
-
-        async function handleAdminLogin(event) {
-            event.preventDefault();
-            const u = document.getElementById('adminUsername').value.trim();
-            const p = document.getElementById('adminPassword').value.trim();
-            const errorMsg = document.getElementById('loginErrorMsg');
-            errorMsg.classList.add('d-none');
-
-            const btnSubmit = event.target.querySelector('button[type="submit"]');
-            const originalBtnHtml = btnSubmit ? btnSubmit.innerHTML : '';
-            if (btnSubmit) {
-                btnSubmit.disabled = true;
-                btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memverifikasi...';
-            }
-
-            const isStaticPlatform = window.location.hostname.includes('github.io') || 
-                                     window.location.hostname.includes('vercel.app') || 
-                                     window.location.protocol === 'file:';
-
-            let loginSuccess = false;
-            let targetRedirect = "admin.php";
-            let responseMessage = "Berhasil masuk! Mengalihkan ke Panel Administrator...";
-
-            // 1. Jika di localhost / server PHP, verifikasi via api/login.php
-            if (!isStaticPlatform) {
-                try {
-                    const res = await fetch('api/login.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: u, password: p })
-                    });
-                    const contentType = res.headers.get("content-type") || "";
-                    if (contentType.includes("application/json")) {
-                        const data = await res.json();
-                        if (res.ok && data.status === 'success') {
-                            loginSuccess = true;
-                            targetRedirect = data.redirect || "admin.php";
-                            responseMessage = data.message || responseMessage;
-                        } else {
-                            errorMsg.textContent = data.message || "Username atau password salah!";
-                            errorMsg.classList.remove('d-none');
-                            if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = originalBtnHtml; }
-                            return;
-                        }
-                    }
-                } catch (err) {
-                    console.warn("Backend PHP tidak merespons, beralih ke verifikasi lokal:", err);
-                }
-            }
-
-            // 2. Jika di GitHub Pages / Vercel (platform statis tanpa PHP/MySQL), gunakan verifikasi demo
-            if (!loginSuccess && isStaticPlatform) {
-                if (u === "admin" && p === "perencanaan2026") {
-                    loginSuccess = true;
-                    targetRedirect = "admin.php";
-                    responseMessage = "Berhasil masuk! Mengalihkan...";
-                } else {
-                    errorMsg.textContent = "Username atau password salah!";
-                    errorMsg.classList.remove('d-none');
-                    if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = originalBtnHtml; }
-                    return;
-                }
-            }
-
-            if (loginSuccess) {
-                localStorage.setItem(STORAGE_KEY_ADMIN, 'true');
-                const modalEl = document.getElementById('modalLoginAdmin');
-                const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if (modalInstance) modalInstance.hide();
-                showNotification(responseMessage);
-                setTimeout(() => {
-                    window.location.href = targetRedirect;
-                }, 600);
-            } else {
-                errorMsg.textContent = "Gagal memverifikasi login.";
-                errorMsg.classList.remove('d-none');
-            }
-
-            if (btnSubmit) {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = originalBtnHtml;
-            }
+            window.location.href = 'login.php';
         }
 
         function showNotification(pesan) {
@@ -823,6 +720,12 @@
                 navApbn.className = "nav-pill-link active-pill-apbn";
             }
 
+            const banner = document.getElementById('heroFilterBanner');
+            if (banner) {
+                banner.classList.add('d-none');
+                banner.classList.remove('d-flex');
+            }
+
             document.getElementById('menuContainer').classList.add('d-none');
             document.getElementById('apbnCardContainer').classList.remove('d-none');
             document.getElementById('filterTahunAPBN').classList.add('d-none');
@@ -834,12 +737,15 @@
         }
 
         function handleSearch() {
-            searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            const input = document.getElementById('searchInput');
+            searchQuery = input ? input.value.trim().toLowerCase() : "";
             const btnClear = document.getElementById('btnClearSearch');
-            if (searchQuery.length > 0) {
-                btnClear.classList.remove('d-none');
-            } else {
-                btnClear.classList.add('d-none');
+            if (btnClear) {
+                if (searchQuery.length > 0) {
+                    btnClear.classList.remove('d-none');
+                } else {
+                    btnClear.classList.add('d-none');
+                }
             }
 
             if (currentModeTitle === "APBD") {
@@ -850,14 +756,129 @@
         }
 
         function clearSearch() {
-            document.getElementById('searchInput').value = "";
+            const input = document.getElementById('searchInput');
+            if (input) input.value = "";
             searchQuery = "";
-            document.getElementById('btnClearSearch').classList.add('d-none');
+            const btnClear = document.getElementById('btnClearSearch');
+            if (btnClear) btnClear.classList.add('d-none');
             if (currentModeTitle === "APBD") {
                 renderMenuCards();
             } else {
                 renderAPBNCards();
             }
+        }
+
+        // ==========================================
+        // RENDER KARTU DINAMIS DI HERO SECTION
+        // ==========================================
+        function renderHeroCards() {
+            const grid = document.getElementById('heroFeaturesGrid');
+            if (!grid) return;
+
+            // Fallback default jika heroCardsData belum termuat
+            const cards = (heroCardsData && heroCardsData.length > 0) ? heroCardsData : [
+                { id: 'hero_apbd', title: 'APBD 2022-2026', subtitle: 'Rekap Seluruh Unit', icon: 'fa-file-invoice-dollar', type: 'macro', target: 'apbd', unit_keys: [] },
+                { id: 'hero_sekretariat', title: 'Sekretariat', subtitle: 'Sekretariat Dinas', icon: 'fa-building-user', type: 'units', target: '', unit_keys: ['1'] },
+                { id: 'hero_gaji', title: 'Gaji dan Tunjangan', subtitle: 'Gaji & Tunjangan Pegawai', icon: 'fa-money-check-dollar', type: 'units', target: '', unit_keys: ['A'] },
+                { id: 'hero_apbn', title: 'APBN 2022-2026', subtitle: 'Rekap Seluruh Satker', icon: 'fa-table-list', type: 'macro', target: 'apbn', unit_keys: [] }
+            ];
+
+            let html = '';
+            cards.forEach(card => {
+                const icon = card.icon || 'fa-building-user';
+                const title = card.title || 'Sorotan';
+                const sub = card.subtitle || '';
+
+                let multiBadge = '';
+                if (card.type === 'units' && Array.isArray(card.unit_keys) && card.unit_keys.length > 1) {
+                    multiBadge = `<span class="badge bg-success bg-opacity-25 text-white ms-1" style="font-size: 0.65rem;">${card.unit_keys.length} Unit</span>`;
+                }
+
+                html += `
+                    <a href="#dashboard-section" class="hero-feature-card" onclick="filterHeroCard('${card.id}')" title="Buka ${escapeHtml(title)}">
+                        <div class="hero-card-icon">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div class="hero-card-text">
+                            <h6 class="hero-card-title mb-0 d-flex align-items-center justify-content-between">
+                                <span>${escapeHtml(title)}</span>
+                                ${multiBadge}
+                            </h6>
+                            <span class="hero-card-sub">${escapeHtml(sub)}</span>
+                        </div>
+                    </a>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function filterHeroCard(target) {
+            const card = (heroCardsData || []).find(c => c.id === target);
+
+            if (target === 'apbd' || (card && card.type === 'macro' && (card.target === 'apbd' || card.id === 'hero_apbd'))) {
+                resetHeroFilter();
+                clearSearch();
+                showTabAPBD();
+            } else if (target === 'apbn' || (card && (card.type === 'apbn' || card.target === 'apbn' || card.id === 'hero_apbn'))) {
+                resetHeroFilter();
+                clearSearch();
+                showTabAPBN();
+            } else if (card && card.type === 'units') {
+                showTabAPBD();
+                clearSearch();
+                heroFilteredUnitKeys = Array.isArray(card.unit_keys) ? card.unit_keys : [];
+                activeHeroCardTitle = card.title || 'Unit Pilihan';
+
+                const banner = document.getElementById('heroFilterBanner');
+                const bannerTitle = document.getElementById('heroFilterTitle');
+                if (banner && bannerTitle) {
+                    bannerTitle.textContent = `${activeHeroCardTitle} (${heroFilteredUnitKeys.length} Unit Kerja)`;
+                    banner.classList.remove('d-none');
+                    banner.classList.add('d-flex');
+                }
+                renderMenuCards();
+            } else if (activeAPBD && activeAPBD[target]) {
+                // Direct unit key fallback
+                showTabAPBD();
+                clearSearch();
+                heroFilteredUnitKeys = [String(target)];
+                activeHeroCardTitle = activeAPBD[target].nama;
+                const banner = document.getElementById('heroFilterBanner');
+                const bannerTitle = document.getElementById('heroFilterTitle');
+                if (banner && bannerTitle) {
+                    bannerTitle.textContent = activeHeroCardTitle;
+                    banner.classList.remove('d-none');
+                    banner.classList.add('d-flex');
+                }
+                renderMenuCards();
+            }
+
+            const targetSection = document.getElementById('dashboard-section');
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function resetHeroFilter() {
+            heroFilteredUnitKeys = null;
+            activeHeroCardTitle = '';
+            const banner = document.getElementById('heroFilterBanner');
+            if (banner) {
+                banner.classList.add('d-none');
+                banner.classList.remove('d-flex');
+            }
+            renderMenuCards();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         // ==========================================
@@ -869,6 +890,13 @@
             container.innerHTML = '';
 
             let keys = Object.keys(activeAPBD);
+
+            // Filter berdasarkan Hero Card aktif (multi-unit)
+            if (heroFilteredUnitKeys !== null) {
+                keys = keys.filter(key => heroFilteredUnitKeys.includes(String(key)));
+            }
+
+            // Filter pencarian
             if (searchQuery) {
                 keys = keys.filter(key => {
                     const item = activeAPBD[key];
@@ -1714,7 +1742,10 @@
             showTabAPBD();
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('login') === 'required' || urlParams.get('auth') === 'required') {
-                openLoginModal();
+                window.location.href = 'login.php?auth=required';
+            } else if (urlParams.get('logout') === '1') {
+                showNotification('Anda telah berhasil keluar dari Panel Administrator.');
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
 
             const matrixModalEl = document.getElementById('matrixModal');

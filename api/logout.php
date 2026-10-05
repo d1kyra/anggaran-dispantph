@@ -11,7 +11,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $user = $_SESSION['admin_user'] ?? 'guest';
-logAuditEvent('admin_logout', ['username' => $user]);
+$loginTime = (int) ($_SESSION['login_time'] ?? time());
+$durationSeconds = max(0, time() - $loginTime);
+logAuditEvent('admin_logout', [
+    'username' => $user,
+    'login_time' => $loginTime,
+    'login_ip' => $_SESSION['admin_login_ip'] ?? ($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
+    'duration_seconds' => $durationSeconds
+]);
 
 $_SESSION = [];
 
@@ -29,6 +36,7 @@ header("Content-Type: application/json");
 echo json_encode([
     "status" => "success",
     "message" => "Logout berhasil",
+    "durationSeconds" => $durationSeconds,
     "redirect" => "index.html"
 ]);
 ?>

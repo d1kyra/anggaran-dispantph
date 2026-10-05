@@ -6,14 +6,31 @@ emitSecurityHeaders();
 ensureSecureSession();
 
 // Proteksi server-side dengan timeout sesi yang sama seperti endpoint API.
-if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true || isSessionExpired()) {
+$sessionExpired = isSessionExpired();
+if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true || $sessionExpired) {
+    if (!empty($_SESSION['admin_logged_in']) && $sessionExpired) {
+        $loginTime = (int) ($_SESSION['login_time'] ?? time());
+        logAuditEvent('admin_session_expired', [
+            'username' => $_SESSION['admin_user'] ?? 'admin',
+            'login_time' => $loginTime,
+            'login_ip' => $_SESSION['admin_login_ip'] ?? ($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
+            'duration_seconds' => max(0, time() - $loginTime)
+        ]);
+    }
     $_SESSION = [];
     session_destroy();
-    header("Location: index.html?auth=required");
+    header("Location: login.php?auth=required");
     exit;
 }
 
 refreshSessionActivity();
+
+$adminUser = (string) ($_SESSION['admin_user'] ?? 'admin');
+$adminLoginTimestamp = (int) ($_SESSION['login_time'] ?? time());
+$adminLoginIp = (string) ($_SESSION['admin_login_ip'] ?? ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+$lastAdminLogin = getLatestAdminLogin();
+$lastAdminName = $lastAdminLogin ? (string) ($lastAdminLogin['context']['username'] ?? $lastAdminLogin['user'] ?? $adminUser) : '—';
+$lastAdminLoginTime = (string) ($lastAdminLogin['timestamp'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -40,7 +57,7 @@ refreshSessionActivity();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom Style System -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__ . '/style.css') ?>">
     <style>
         .touch-scroll {
             -webkit-overflow-scrolling: touch;
@@ -55,7 +72,7 @@ refreshSessionActivity();
          ======================================================================== -->
     <nav class="navbar navbar-dark navbar-admin sticky-top">
         <div class="container px-3 px-md-4 d-flex align-items-center justify-content-between">
-            <a href="admin.php" class="navbar-brand d-flex align-items-center gap-2">
+            <a href="admin_dashboard.php" class="navbar-brand d-flex align-items-center gap-2">
                 <div class="brand-badge-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                     <i class="fa-solid fa-user-shield text-dark"></i>
                 </div>
@@ -68,21 +85,7 @@ refreshSessionActivity();
                 </div>
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="#welcome-section" class="nav-pill-link">
-                    <i class="fa-solid fa-house"></i>
-                    <span class="d-none d-md-inline">Beranda</span>
-                </a>
-                <a href="#dashboard-section" class="nav-pill-link active-pill-apbd" id="navPillAPBD"
-                    onclick="showTabAPBD()">
-                    <i class="fa-solid fa-building-columns"></i>
-                    <span>APBD</span>
-                </a>
-                <a href="#dashboard-section" class="nav-pill-link" id="navPillAPBN" onclick="showTabAPBN()">
-                    <i class="fa-solid fa-landmark"></i>
-                    <span>APBN</span>
-                </a>
                 <!-- Link to Public View -->
-
                 <a href="index.html" target="_blank" class="btn-public-preview"
                     title="Buka website tampilan publik di tab baru">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -99,100 +102,45 @@ refreshSessionActivity();
         </div>
     </nav>
 
-    <!-- ========================================================================
-         BAGIAN 1: HERO / SELAMAT DATANG (IMMERSION SHOWCASE)
-         ======================================================================== -->
-    <section id="welcome-section" class="welcome-hero">
-        <!-- Background Ambient Orbs -->
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
-        <div class="bg-pattern"></div>
-
-        <div class="hero-content">
-            <div class="hero-badge">
-                <i class="fa-solid fa-leaf"></i> DINAS PANGAN, TANAMAN PANGAN & HORTIKULTURA PROV. KALTIM
-            </div>
-
-            <h1 class="hero-title">
-                Selamat Datang di <br>
-                <span class="highlight-text">Sistem Informasi Anggaran</span>
-            </h1>
-
-            <p class="hero-subtitle">
-                Portal monitoring, transparansi, dan rekapitulasi realisasi anggaran multiyears (2022 - 2026) APBD &
-                APBN pada Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur.
-            </p>
-
-            <!-- 4 Features Highlight Cards Grid -->
-            <div class="hero-features-grid">
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
-                    <div class="hero-card-icon">
-                        <i class="fa-solid fa-seedling"></i>
-                    </div>
-                    <div>
-                        <h6 class="hero-card-title">Tanaman Pangan</h6>
-                        <p class="hero-card-desc">Monitoring alokasi dan realisasi program komoditas pangan daerah.</p>
-                    </div>
-                </a>
-
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
-                    <div class="hero-card-icon">
-                        <i class="fa-solid fa-apple-whole"></i>
-                    </div>
-                    <div>
-                        <h6 class="hero-card-title">Hortikultura</h6>
-                        <p class="hero-card-desc">Pengawalan anggaran dan capaian komoditas hortikultura unggulan.</p>
-                    </div>
-                </a>
-
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBD()">
-                    <div class="hero-card-icon">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <div>
-                        <h6 class="hero-card-title">APBD Multiyears</h6>
-                        <p class="hero-card-desc">Rekapitulasi terpadu pagu, revisi, realisasi, dan sisa anggaran
-                            2022-2026.</p>
-                    </div>
-                </a>
-
-                <a href="#dashboard-section" class="hero-feature-card" onclick="showTabAPBN()">
-                    <div class="hero-card-icon">
-                        <i class="fa-solid fa-table-list"></i>
-                    </div>
-                    <div>
-                        <h6 class="hero-card-title">Realisasi APBN</h6>
-                        <p class="hero-card-desc">Evaluasi kinerja keuangan dan fisik satker per tahun anggaran.</p>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Floating Scroll Indicator -->
+    <aside class="admin-sidebar" aria-label="Navigasi administrator">
+        <a class="admin-sidebar-brand" href="admin_dashboard.php">
+            <span><i class="fa-solid fa-wheat-awn"></i></span>
+            <strong>SISFOR <small>ANGGARAN</small></strong>
+        </a>
+        <p class="admin-sidebar-label">MENU UTAMA</p>
+        <nav class="admin-sidebar-nav">
+            <a href="admin_dashboard.php"><i class="fa-solid fa-table-cells-large"></i> Dashboard</a>
+            <a id="adminSideNavApbd" class="active" href="#apbd" onclick="showTabAPBD()"><i class="fa-solid fa-building-columns"></i> Kelola APBD</a>
+            <a id="adminSideNavApbn" href="#apbn" onclick="showTabAPBN()"><i class="fa-solid fa-landmark"></i> Kelola APBN</a>
+            <a id="adminSideNavHero" href="#hero-cards" onclick="openModalManageHeroCards()"><i class="fa-solid fa-layer-group"></i> Kelola Sorotan</a>
+        </nav>
+        <p class="admin-sidebar-label mt-4">AKUN</p>
+        <a href="admin_login_history.php" class="admin-last-login" title="Klik untuk melihat riwayat lengkap semua login">
+            <span class="admin-last-login-icon"><i class="fa-solid fa-user-clock"></i></span>
             <div>
-                <a href="#dashboard-section" class="hero-scroll-prompt">
-                    <span>Gulir ke Bawah untuk Melihat Data</span>
-                    <div class="scroll-mouse-icon">
-                        <div class="scroll-wheel"></div>
-                    </div>
-                    <i class="fa-solid fa-chevron-down animated-bounce"></i>
-                </a>
+                <small>LOGIN TERAKHIR</small>
+                <strong><?= htmlspecialchars($lastAdminName, ENT_QUOTES, 'UTF-8') ?></strong>
+                <time id="adminLastLoginTime" datetime="<?= htmlspecialchars($lastAdminLoginTime, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(formatAuditTimestamp($lastAdminLoginTime), ENT_QUOTES, 'UTF-8') ?></time>
             </div>
+            <span class="admin-last-login-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </a>
+        <nav class="admin-sidebar-nav">
+            <a href="admin_login_history.php"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Login</a>
+            <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Web Publik</a>
+            <button type="button" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+        </nav>
+        <div class="admin-sidebar-user">
+            <i class="fa-solid fa-user-shield"></i>
+            <span><?= htmlspecialchars($adminUser, ENT_QUOTES, 'UTF-8') ?><small>Administrator aktif</small></span>
         </div>
+    </aside>
 
-        <!-- Wave Curve Transition Divider -->
-        <div class="hero-wave-divider">
-            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M0,0 C150,90 350,-40 500,45 C650,130 900,10 1200,50 L1200,120 L0,120 Z" class="shape-fill">
-                </path>
-            </svg>
-        </div>
-    </section>
+    <main class="admin-workspace">
 
     <!-- ========================================================================
          BAGIAN 2: DASHBOARD MONITORING ANGGARAN
          ======================================================================== -->
-    <section id="dashboard-section" class="dashboard-section">
+    <section id="admin-management" class="dashboard-section">
         <div class="container px-3 px-md-4 pb-5">
 
             <!-- Notice Strip Panel Administrator -->
@@ -209,26 +157,10 @@ refreshSessionActivity();
                 </div>
             </div>
 
-            <!-- Header Banner & Toggle -->
-            <div
-                class="header-banner d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                <div>
-                    <h3 class="page-title">Monitoring Anggaran 2022 - 2026</h3>
-                    <p class="page-subtitle">Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur
-                    </p>
-                </div>
-
-                <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <!-- APBD / APBN Switcher -->
-                    <div class="toggle-container">
-                        <button id="btnAPBD" class="btn btn-toggle-source active-apbd" onclick="showTabAPBD()">
-                            <i class="fa-solid fa-building-columns me-1 me-md-2"></i> APBD
-                        </button>
-                        <button id="btnAPBN" class="btn btn-toggle-source inactive" onclick="showTabAPBN()">
-                            <i class="fa-solid fa-landmark me-1 me-md-2"></i> APBN
-                        </button>
-                    </div>
-                </div>
+            <!-- Header Banner -->
+            <div class="header-banner">
+                <h3 class="page-title">Monitoring Anggaran 2022 - 2026</h3>
+                <p class="page-subtitle">Dinas Pangan, Tanaman Pangan, dan Hortikultura Provinsi Kalimantan Timur</p>
             </div>
 
             <!-- Filter & CRUD Action Toolbar -->
@@ -243,17 +175,6 @@ refreshSessionActivity();
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <!-- Live Search Box -->
-                    <div class="search-box-wrapper">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="searchInput" class="form-control form-control-sm search-input"
-                            placeholder="Cari unit kerja / kegiatan..." oninput="handleSearch()">
-                        <button class="btn-clear-search d-none" id="btnClearSearch" onclick="clearSearch()"
-                            title="Hapus pencarian">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-
                     <!-- APBN Year Filter Dropdown -->
                     <div id="filterTahunAPBN" class="d-none align-items-center gap-2">
                         <label class="fw-bold small text-secondary m-0">Tahun:</label>
@@ -270,6 +191,11 @@ refreshSessionActivity();
                     <button class="btn-crud-add" id="btnTambahData" onclick="openCreateModal()">
                         <i class="fa-solid fa-plus"></i>
                         <span id="btnTambahText">Tambah Unit APBD</span>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-1 px-3 py-2 rounded-3 shadow-sm" onclick="openModalManageHeroCards()" title="Kelola Sorotan Beranda">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Kelola Sorotan</span>
                     </button>
 
                     <button class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-1 px-3 py-2 rounded-3 shadow-sm" onclick="openUbahPeriodeModal()" title="Ubah periode bulan laporan realisasi (Admin)">
@@ -306,6 +232,7 @@ refreshSessionActivity();
             </div>
         </div>
     </section>
+    </main>
 
     <!-- ========================================================================
          MODAL 1: MATRIKS MULTIYEARS (APBD FOLDER VIEW)
@@ -379,24 +306,19 @@ refreshSessionActivity();
                         <div class="row g-2 mb-3">
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-wallet text-primary me-1"></i> Total Pagu (5 Thn):</span>
+                                    <span class="small text-muted fw-semibold">Total Pagu (5 Thn):</span>
                                     <span class="fw-bold text-dark small" id="kpiChartTotalPagu">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-circle-check text-success me-1"></i> Total Realisasi (5
-                                        Thn):</span>
+                                    <span class="small text-muted fw-semibold">Total Realisasi (5 Thn):</span>
                                     <span class="fw-bold text-success small" id="kpiChartTotalReal">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu (5
-                                        Thn):</span>
+                                    <span class="small text-muted fw-semibold">Sisa Pagu (5 Thn):</span>
                                     <span class="fw-bold text-warning-emphasis small" id="kpiChartTotalSisa">Rp 0</span>
                                 </div>
                             </div>
@@ -548,23 +470,19 @@ refreshSessionActivity();
                         <div class="row g-2 mb-3">
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-wallet text-success me-1"></i> Total Pagu:</span>
+                                    <span class="small text-muted fw-semibold">Total Pagu:</span>
                                     <span class="fw-bold text-dark small" id="apbnKpiTotalPagu">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-circle-check text-success me-1"></i> Total
-                                        Realisasi:</span>
+                                    <span class="small text-muted fw-semibold">Total Realisasi:</span>
                                     <span class="fw-bold text-success small" id="apbnKpiTotalReal">Rp 0</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="kpi-chip">
-                                    <span class="small text-muted fw-semibold"><i
-                                            class="fa-solid fa-piggy-bank text-warning me-1"></i> Sisa Pagu:</span>
+                                    <span class="small text-muted fw-semibold">Sisa Pagu:</span>
                                     <span class="fw-bold text-warning-emphasis small" id="apbnKpiTotalSisa">Rp 0</span>
                                 </div>
                             </div>
@@ -985,6 +903,176 @@ refreshSessionActivity();
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Logout Administrator -->
+    <div class="modal fade modal-logout" id="modalConfirmLogout" tabindex="-1" aria-labelledby="modalLogoutTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+            <div class="modal-content text-center p-4">
+                <div class="modal-logout-icon-wrap">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </div>
+                <h4 class="modal-logout-title" id="modalLogoutTitle">Konfirmasi Keluar</h4>
+                <p class="modal-logout-desc">
+                    Apakah Anda yakin ingin mengakhiri sesi dan keluar dari Panel Administrator?
+                </p>
+                <div class="modal-logout-user-tag">
+                    <i class="fa-solid fa-user-shield text-success"></i>
+                    <span>Sesi: <strong><?= htmlspecialchars($adminUser, ENT_QUOTES, 'UTF-8') ?></strong></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <button type="button" class="btn btn-modal-logout-cancel flex-grow-1" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-modal-logout-confirm flex-grow-1" id="btnConfirmLogout" onclick="executeLogoutAdmin()">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Ya, Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         MODAL: KELOLA SOROTAN BERANDA (UNIFIED MODAL: LIST & FORM)
+         ======================================================================== -->
+    <div class="modal fade" id="modalManageHeroCards" tabindex="-1" aria-labelledby="modalManageHeroTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- MODAL HEADER -->
+                <div class="modal-header py-3 px-4 bg-light border-bottom d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-grid place-items-center rounded-3 bg-primary bg-opacity-10 text-primary p-2" id="heroModalHeaderBadge" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-layer-group" id="heroModalHeaderIcon"></i>
+                        </span>
+                        <div>
+                            <h5 class="modal-title fw-bold m-0 text-dark" id="modalManageHeroTitle">Kelola Sorotan Beranda</h5>
+                            <small class="text-muted" id="modalManageHeroSubtitle">Atur menu sorotan yang tampil di beranda publik</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- MODAL BODY -->
+                <div class="modal-body p-4">
+                    <!-- VIEW 1: DAFTAR SOROTAN (LIST VIEW) -->
+                    <div id="heroCardViewList">
+                        <div class="alert alert-info border-0 rounded-3 py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                            <i class="fa-solid fa-circle-info text-info fs-5"></i>
+                            <div>
+                                Setiap item sorotan dapat dikonfigurasi untuk menampilkan <strong>satu atau lebih unit kerja APBD sekaligus</strong>, atau sebagai ringkasan makro.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-secondary">
+                                <i class="fa-solid fa-list-check me-1"></i> Daftar Sorotan Aktif (<span id="heroCardCount">0</span>)
+                            </h6>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetHeroCardsToDefault()">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Reset ke Default
+                                </button>
+                                <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="openCreateHeroCardModal()">
+                                    <i class="fa-solid fa-plus me-1"></i> Tambah Sorotan Baru
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="adminHeroCardsList" class="d-flex flex-column gap-2">
+                            <!-- Loaded dynamically via JavaScript -->
+                            <div class="text-center py-4 text-muted">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x mb-2 text-secondary"></i>
+                                <div>Memuat konfigurasi sorotan...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 2: FORM TAMBAH / UBAH SOROTAN (FORM VIEW) -->
+                    <form id="formHeroCard" onsubmit="saveHeroCardForm(event)" class="d-none">
+                        <input type="hidden" id="heroCardEditId" value="">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Judul Sorotan <span class="text-danger">*</span></label>
+                                <input type="text" id="heroCardTitleInput" class="form-control form-control-sm fw-bold" placeholder="Contoh: Sekretariat & Gaji" required maxlength="100">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Keterangan / Sub-Label</label>
+                                <input type="text" id="heroCardSubtitleInput" class="form-control form-control-sm" placeholder="Contoh: Sekretariat Dinas & Gaji Pegawai" maxlength="150">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Pilihan Ikon</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white" id="heroCardIconBadge">
+                                        <i class="fa-solid fa-building-user text-success" id="heroCardIconPreview"></i>
+                                    </span>
+                                    <select id="heroCardIconSelect" class="form-select form-select-sm fw-semibold" onchange="updateHeroCardIconPreview(this.value)">
+                                        <option value="fa-building">Gedung</option>
+                                        <option value="fa-building-user">Sekretariat</option>
+                                        <option value="fa-money-check-dollar">Gaji dan Keuangan</option>
+                                        <option value="fa-file-invoice-dollar">Dokumen Anggaran</option>
+                                        <option value="fa-chart-pie">Diagram Anggaran</option>
+                                        <option value="fa-table-list">Tabel APBN</option>
+                                        <option value="fa-wheat-awn">Tanaman Padi</option>
+                                        <option value="fa-leaf">Daun Hortikultura</option>
+                                        <option value="fa-seedling">Bibit Tanaman</option>
+                                        <option value="fa-tractor">Traktor Alsintan</option>
+                                        <option value="fa-shield-halved">Perisai Perlindungan</option>
+                                        <option value="fa-clipboard-check">Agenda Perencanaan</option>
+                                        <option value="fa-chart-line">Grafik Statistik</option>
+                                        <option value="fa-folder-tree">Struktur Unit Kerja</option>
+                                        <option value="fa-landmark">Kementerian Pusat</option>
+                                        <option value="fa-users-gear">Roda Operasional</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Tipe Sorotan / Aksi</label>
+                                <select id="heroCardTypeSelect" class="form-select form-select-sm fw-semibold" onchange="toggleHeroCardTypeView(this.value)">
+                                    <option value="units">Filter Unit APBD Tertentu</option>
+                                    <option value="macro">Ringkasan Makro APBD (Semua Unit)</option>
+                                    <option value="apbn">Ringkasan APBN (Alihkan ke APBN)</option>
+                                </select>
+                            </div>
+
+                            <!-- Multi-Unit Checklist (Hanya jika tipe = units) -->
+                            <div class="col-12" id="heroCardUnitsSelectionBox">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label small fw-bold text-dark mb-0">
+                                        <i class="fa-solid fa-square-check text-success me-1"></i> Pilih Unit yang Masuk ke Sorotan:
+                                    </label>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-link btn-sm text-decoration-none py-0 px-1 small" onclick="selectAllHeroUnits(true)">Pilih Semua</button>
+                                        <span class="text-muted">|</span>
+                                        <button type="button" class="btn btn-link btn-sm text-decoration-none py-0 px-1 small text-danger" onclick="selectAllHeroUnits(false)">Kosongkan</button>
+                                    </div>
+                                </div>
+                                <div class="p-2 border rounded-3 bg-light" style="max-height: 220px; overflow-y: auto;" id="heroCardUnitsChecklist">
+                                    <!-- Populated dynamically via JavaScript with all units in activeAPBD -->
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 0.73rem;">
+                                    Centang satu, dua, atau lebih unit kerja untuk dikelompokkan ke dalam sorotan ini.
+                                </small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- FOOTER 1: LIST FOOTER -->
+                <div class="modal-footer bg-light px-4 py-2 d-flex justify-content-between" id="heroModalFooterList">
+                    <small class="text-muted"><i class="fa-solid fa-shield-halved text-success me-1"></i> Perubahan langsung tersimpan ke sistem</small>
+                    <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                </div>
+
+                <!-- FOOTER 2: FORM FOOTER -->
+                <div class="modal-footer bg-light px-4 py-2 d-flex justify-content-between d-none" id="heroModalFooterForm">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="backToHeroCardsList()">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success px-4 fw-bold shadow-sm" id="btnSaveHeroCard" onclick="document.getElementById('formHeroCard').requestSubmit()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Sorotan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container-custom" id="toastContainer"></div>
 
@@ -1023,6 +1111,7 @@ refreshSessionActivity();
         let matrixPercentChartInstance = null;
         let apbnNominalChartInstance = null;
         let apbnPercentChartInstance = null;
+        let adminOverviewChartInstance = null;
         let currentChartDisplayMode = 'all';
 
         // APBN Grouped Data
@@ -1033,6 +1122,98 @@ refreshSessionActivity();
         let tempUnitEditData = {};
         let currentEditingYear = "2026";
         let csrfToken = '';
+        const adminSessionStartedAt = <?= json_encode($adminLoginTimestamp * 1000) ?>;
+
+        function formatSessionDuration(totalSeconds) {
+            const safeSeconds = Math.max(0, Math.floor(totalSeconds));
+            const hours = String(Math.floor(safeSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((safeSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(safeSeconds % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function initAdminSessionDashboard() {
+            const loginDate = new Date(adminSessionStartedAt);
+            const loginTimeEl = document.getElementById('adminLoginTime');
+            const loginDayEl = document.getElementById('adminLoginDay');
+            const durationEl = document.getElementById('adminSessionDuration');
+            const lastLoginTimeEl = document.getElementById('adminLastLoginTime');
+
+            if (loginTimeEl) {
+                loginTimeEl.textContent = loginDate.toLocaleTimeString('id-ID', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+            if (loginDayEl) {
+                loginDayEl.textContent = loginDate.toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                });
+            }
+            if (lastLoginTimeEl && lastLoginTimeEl.dateTime) {
+                const lastLoginDate = new Date(lastLoginTimeEl.dateTime);
+                if (!Number.isNaN(lastLoginDate.getTime())) {
+                    lastLoginTimeEl.textContent = lastLoginDate.toLocaleString('id-ID', {
+                        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                } else {
+                    lastLoginTimeEl.textContent = 'Belum tersedia';
+                }
+            }
+
+            const updateDuration = () => {
+                if (durationEl) durationEl.textContent = formatSessionDuration((Date.now() - adminSessionStartedAt) / 1000);
+            };
+            updateDuration();
+            window.setInterval(updateDuration, 1000);
+        }
+
+        function updateAdminDataSummary() {
+            const apbdCountEl = document.getElementById('adminApbdCount');
+            const apbnCountEl = document.getElementById('adminApbnCount');
+            if (apbdCountEl) apbdCountEl.textContent = Object.keys(activeAPBD).length;
+            if (apbnCountEl) apbnCountEl.textContent = Object.keys(groupedAPBN).length;
+            const apbdCountSideEl = document.getElementById('adminApbdCountSide');
+            const apbnCountSideEl = document.getElementById('adminApbnCountSide');
+            const periodEl = document.getElementById('adminCurrentPeriod');
+            if (apbdCountSideEl) apbdCountSideEl.textContent = Object.keys(activeAPBD).length;
+            if (apbnCountSideEl) apbnCountSideEl.textContent = Object.keys(groupedAPBN).length;
+            if (periodEl) periodEl.textContent = periodeAktif || '—';
+            renderAdminOverviewChart();
+        }
+
+        function renderAdminOverviewChart() {
+            const canvas = document.getElementById('adminOverviewChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const years = ['2022', '2023', '2024', '2025', '2026'];
+            const totals = years.map(year => Object.values(activeAPBD).reduce((total, unit) => {
+                const data = unit[year] || {};
+                return total + Number(data.paguApbd ?? data.paguTahunan ?? 0);
+            }, 0));
+            const realization = years.map(year => Object.values(activeAPBD).reduce((total, unit) => {
+                return total + Number((unit[year] || {}).realisasiKeuangan || 0);
+            }, 0));
+
+            if (adminOverviewChartInstance) adminOverviewChartInstance.destroy();
+            adminOverviewChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [
+                        { label: 'Pagu', data: totals, borderColor: '#0288d1', backgroundColor: 'rgba(2, 136, 209, 0.08)', fill: true, tension: 0.38, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#0288d1' },
+                        { label: 'Realisasi', data: realization, borderColor: '#2e7d32', backgroundColor: 'rgba(46, 125, 50, 0.08)', fill: true, tension: 0.38, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#2e7d32' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#1a2e22', boxWidth: 10, usePointStyle: true, font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600' } } } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#607d8b', font: { family: "'Plus Jakarta Sans', sans-serif" } } },
+                        y: { grid: { color: 'rgba(0, 0, 0, 0.06)' }, ticks: { color: '#607d8b', font: { family: "'Plus Jakarta Sans', sans-serif" }, callback: value => value >= 1000000000 ? `${(value / 1000000000).toLocaleString('id-ID')} M` : value.toLocaleString('id-ID') } }
+                    }
+                }
+            });
+        }
 
         async function fetchCsrfToken() {
             try {
@@ -1092,6 +1273,7 @@ refreshSessionActivity();
                 if (apbnJson.status === 'success') activeAPBN = apbnJson.data;
 
                 groupedAPBN = transformAPBNtoGrouped();
+                updateAdminDataSummary();
 
                 if (currentModeTitle === "APBD") {
                     renderMenuCards();
@@ -1109,6 +1291,7 @@ refreshSessionActivity();
                 if (typeof dataAPBD !== 'undefined') activeAPBD = JSON.parse(JSON.stringify(dataAPBD));
                 if (typeof dataAPBN !== 'undefined') activeAPBN = JSON.parse(JSON.stringify(dataAPBN));
                 groupedAPBN = transformAPBNtoGrouped();
+                updateAdminDataSummary();
                 if (currentModeTitle === "APBD") renderMenuCards();
                 else renderAPBNCards();
             }
@@ -1122,12 +1305,27 @@ refreshSessionActivity();
         // ADMIN LOGOUT & GUARD
         // ==========================================
         function logoutAdmin() {
-            if (confirm("Apakah Anda yakin ingin keluar dari Panel Administrator?")) {
-                localStorage.removeItem(STORAGE_KEY_ADMIN);
-                fetch('api/logout.php', { method: 'POST' }).finally(() => {
-                    window.location.href = "index.html";
-                });
+            const modalEl = document.getElementById('modalConfirmLogout');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            } else if (confirm("Apakah Anda yakin ingin keluar dari Panel Administrator?")) {
+                executeLogoutAdmin();
             }
+        }
+
+        function executeLogoutAdmin() {
+            const btn = document.getElementById('btnConfirmLogout');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mengeluarkan...';
+            }
+            localStorage.removeItem(STORAGE_KEY_ADMIN);
+            localStorage.removeItem('sisfor_admin_logged_in');
+            localStorage.removeItem('isAdminLoggedIn');
+            fetch('api/logout.php', { method: 'POST' }).finally(() => {
+                window.location.href = "index.html?logout=1";
+            });
         }
 
         function checkAdminAuth(actionCallback) {
@@ -1447,6 +1645,11 @@ refreshSessionActivity();
                 navApbn.className = "nav-pill-link";
             }
 
+            const sideApbd = document.getElementById('adminSideNavApbd');
+            const sideApbn = document.getElementById('adminSideNavApbn');
+            if (sideApbd) sideApbd.classList.add('active');
+            if (sideApbn) sideApbn.classList.remove('active');
+
             document.getElementById('menuContainer').classList.remove('d-none');
             document.getElementById('apbnCardContainer').classList.add('d-none');
             document.getElementById('filterTahunAPBN').classList.add('d-none');
@@ -1477,6 +1680,11 @@ refreshSessionActivity();
                 navApbn.className = "nav-pill-link active-pill-apbn";
             }
 
+            const sideApbd = document.getElementById('adminSideNavApbd');
+            const sideApbn = document.getElementById('adminSideNavApbn');
+            if (sideApbd) sideApbd.classList.remove('active');
+            if (sideApbn) sideApbn.classList.add('active');
+
             document.getElementById('menuContainer').classList.add('d-none');
             document.getElementById('apbnCardContainer').classList.remove('d-none');
             document.getElementById('filterTahunAPBN').classList.add('d-none');
@@ -1487,12 +1695,15 @@ refreshSessionActivity();
         }
 
         function handleSearch() {
-            searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            const input = document.getElementById('searchInput');
+            searchQuery = input ? input.value.trim().toLowerCase() : "";
             const btnClear = document.getElementById('btnClearSearch');
-            if (searchQuery.length > 0) {
-                btnClear.classList.remove('d-none');
-            } else {
-                btnClear.classList.add('d-none');
+            if (btnClear) {
+                if (searchQuery.length > 0) {
+                    btnClear.classList.remove('d-none');
+                } else {
+                    btnClear.classList.add('d-none');
+                }
             }
 
             if (currentModeTitle === "APBD") {
@@ -1503,9 +1714,11 @@ refreshSessionActivity();
         }
 
         function clearSearch() {
-            document.getElementById('searchInput').value = "";
+            const input = document.getElementById('searchInput');
+            if (input) input.value = "";
             searchQuery = "";
-            document.getElementById('btnClearSearch').classList.add('d-none');
+            const btnClear = document.getElementById('btnClearSearch');
+            if (btnClear) btnClear.classList.add('d-none');
             if (currentModeTitle === "APBD") {
                 renderMenuCards();
             } else {
@@ -2562,9 +2775,13 @@ refreshSessionActivity();
             });
         }
 
-        // ==========================================
-        // CRUD LOGIC: APBD MULTIYEARS (DALAM FOLDER EDITOR)
-        // ==========================================
+        function updateIconPreview(iconClass) {
+            const previewEl = document.getElementById('apbdIconPreview');
+            if (previewEl) {
+                previewEl.className = `fa-solid ${iconClass} text-success`;
+            }
+        }
+
         function openCreateModalAPBD() {
             checkAdminAuth(() => {
                 document.getElementById('modalAPBDTitle').innerHTML = `<i class="fa-solid fa-folder-plus text-success me-2"></i> Tambah Unit Kerja Baru`;
@@ -2574,10 +2791,20 @@ refreshSessionActivity();
                 document.getElementById('apbdFormNama').value = "";
                 setPeriodeSelectValue('APBD', periodeAktif);
 
+                const showInHeroEl = document.getElementById('apbdFormShowInHero');
+                if (showInHeroEl) showInHeroEl.checked = true;
+                const iconEl = document.getElementById('apbdFormIcon');
+                if (iconEl) {
+                    iconEl.value = 'fa-building-user';
+                    updateIconPreview('fa-building-user');
+                }
+
                 // Bangun template multiyears default untuk unit baru
                 tempUnitEditData = {
                     nama: "",
                     periodeCustom: periodeAktif,
+                    showInHero: 1,
+                    icon: "fa-building-user",
                     "2022": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
                     "2023": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
                     "2024": { paguAwal: 0, paguAnggaran: 0, paguEfisiensi: 0, paguApbd: 0, paguTahunan: 0, realisasiKeuangan: 0, realisasiPersen: 0, realisasiFisik: 0 },
@@ -2604,6 +2831,17 @@ refreshSessionActivity();
                 document.getElementById('apbdFormKey').disabled = true;
                 document.getElementById('apbdFormNama').value = unit.nama;
                 setPeriodeSelectValue('APBD', unit.periodeCustom || periodeAktif);
+
+                const showInHeroEl = document.getElementById('apbdFormShowInHero');
+                if (showInHeroEl) {
+                    showInHeroEl.checked = (unit.showInHero !== undefined) ? (unit.showInHero == 1 || unit.showInHero === true) : true;
+                }
+                const iconEl = document.getElementById('apbdFormIcon');
+                if (iconEl) {
+                    const ic = unit.icon || 'fa-building-user';
+                    iconEl.value = ic;
+                    updateIconPreview(ic);
+                }
 
                 // Clone deep unit data to working temp object
                 tempUnitEditData = JSON.parse(JSON.stringify(unit));
@@ -2767,6 +3005,8 @@ refreshSessionActivity();
             const formKey = document.getElementById('apbdFormKey').value.trim();
             const nama = document.getElementById('apbdFormNama').value.trim();
             const periodeCustom = document.getElementById('apbdFormPeriodeText').value.trim();
+            const showInHero = document.getElementById('apbdFormShowInHero') ? (document.getElementById('apbdFormShowInHero').checked ? 1 : 0) : 1;
+            const icon = document.getElementById('apbdFormIcon') ? document.getElementById('apbdFormIcon').value : 'fa-building-user';
 
             const targetKey = editKey || formKey;
 
@@ -2777,6 +3017,8 @@ refreshSessionActivity();
 
             tempUnitEditData.nama = nama;
             tempUnitEditData.periodeCustom = periodeCustom || periodeAktif;
+            tempUnitEditData.showInHero = showInHero;
+            tempUnitEditData.icon = icon;
 
             try {
                 const res = await fetch('api/save_apbd.php', {
@@ -2785,6 +3027,8 @@ refreshSessionActivity();
                     body: JSON.stringify({
                         kode: targetKey,
                         nama: nama,
+                        showInHero: showInHero,
+                        icon: icon,
                         data: tempUnitEditData
                     })
                 });
@@ -3311,15 +3555,472 @@ refreshSessionActivity();
             return Number(angka).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%';
         }
 
+        // ==========================================
+        // KELOLA HERO CARD BERANDA (ADMIN)
+        // ==========================================
+        let adminHeroCards = [];
+        let manageHeroModalInstance = null;
+        let formHeroModalInstance = null;
+
+        async function loadAdminHeroCards() {
+            try {
+                const ts = Date.now();
+                const res = await fetch('api/get_hero_cards.php?t=' + ts);
+                const json = await res.json();
+                if (json.status === 'success' && Array.isArray(json.data)) {
+                    adminHeroCards = json.data;
+                } else {
+                    adminHeroCards = [];
+                }
+            } catch (err) {
+                console.error('Gagal memuat hero cards:', err);
+                adminHeroCards = [];
+            }
+        }
+
+        async function openModalManageHeroCards() {
+            checkAdminAuth(async () => {
+                backToHeroCardsList();
+                const modalEl = document.getElementById('modalManageHeroCards');
+                if (!modalEl) return;
+                manageHeroModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                manageHeroModalInstance.show();
+
+                const listEl = document.getElementById('adminHeroCardsList');
+                if (listEl) {
+                    listEl.innerHTML = `
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa-solid fa-spinner fa-spin fa-2x mb-2 text-secondary"></i>
+                            <div>Memuat konfigurasi sorotan...</div>
+                        </div>
+                    `;
+                }
+
+                await loadAdminHeroCards();
+                renderAdminHeroCardsList();
+            });
+        }
+
+        function renderAdminHeroCardsList() {
+            const listEl = document.getElementById('adminHeroCardsList');
+            const countEl = document.getElementById('heroCardCount');
+            if (countEl) countEl.textContent = adminHeroCards.length;
+            if (!listEl) return;
+
+            if (adminHeroCards.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-4 text-muted border rounded-3 bg-light">
+                        <i class="fa-solid fa-layer-group fa-2x mb-2 text-secondary opacity-50"></i>
+                        <p class="mb-2 fw-semibold">Belum ada data sorotan tersimpan.</p>
+                        <button type="button" class="btn btn-sm btn-outline-success" onclick="resetHeroCardsToDefault()">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Pulihkan Sorotan Bawaan Sistem
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            adminHeroCards.forEach((card, index) => {
+                const icon = card.icon || 'fa-building-user';
+                const title = card.title || `Sorotan ${index + 1}`;
+                const subtitle = card.subtitle || '';
+                const type = card.type || 'units';
+
+                let typeBadge = '';
+                let unitsDetail = '';
+
+                if (type === 'macro') {
+                    typeBadge = `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="fa-solid fa-chart-pie me-1"></i> Rekap Semua APBD</span>`;
+                } else if (type === 'apbn') {
+                    typeBadge = `<span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info border-opacity-25 px-2 py-1"><i class="fa-solid fa-landmark me-1"></i> Tab APBN</span>`;
+                } else {
+                    const uKeys = Array.isArray(card.unit_keys) ? card.unit_keys : [];
+                    if (uKeys.length === 0) {
+                        typeBadge = `<span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 px-2 py-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Belum ada unit</span>`;
+                    } else {
+                        typeBadge = `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fa-solid fa-folder-tree me-1"></i> ${uKeys.length} Unit APBD</span>`;
+                        const unitTags = uKeys.map(k => {
+                            const uName = (activeAPBD && activeAPBD[k] && activeAPBD[k].nama) ? activeAPBD[k].nama : `Unit ${k}`;
+                            return `<span class="hero-unit-tag" title="Kode: ${k}">${escapeHtml(uName)}</span>`;
+                        }).join('');
+                        unitsDetail = `<div class="mt-2 pt-2 border-top d-flex flex-wrap align-items-center">${unitTags}</div>`;
+                    }
+                }
+
+                const isFirst = index === 0;
+                const isLast = index === adminHeroCards.length - 1;
+
+                html += `
+                    <div class="admin-hero-item shadow-sm">
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <button type="button" class="btn btn-sm btn-light border py-0 px-1 ${isFirst ? 'disabled opacity-25' : ''}" 
+                                onclick="moveHeroCard(${index}, -1)" title="Geser ke atas" ${isFirst ? 'disabled' : ''}>
+                                <i class="fa-solid fa-chevron-up small"></i>
+                            </button>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.7rem;">#${index + 1}</span>
+                            <button type="button" class="btn btn-sm btn-light border py-0 px-1 ${isLast ? 'disabled opacity-25' : ''}" 
+                                onclick="moveHeroCard(${index}, 1)" title="Geser ke bawah" ${isLast ? 'disabled' : ''}>
+                                <i class="fa-solid fa-chevron-down small"></i>
+                            </button>
+                        </div>
+
+                        <div class="admin-hero-icon-box">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                <h6 class="fw-bold mb-0 text-dark">${escapeHtml(title)}</h6>
+                                ${typeBadge}
+                            </div>
+                            <p class="small text-muted mb-0">${escapeHtml(subtitle || 'Tidak ada sub-label')}</p>
+                            ${unitsDetail}
+                        </div>
+
+                        <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="openEditHeroCardModal('${card.id}')" title="Ubah Sorotan">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteHeroCard('${card.id}')" title="Hapus Sorotan">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listEl.innerHTML = html;
+        }
+
+        function populateHeroUnitsChecklist(selectedKeys = []) {
+            const container = document.getElementById('heroCardUnitsChecklist');
+            if (!container) return;
+
+            const unitKeys = Object.keys(activeAPBD || {});
+            if (unitKeys.length === 0) {
+                container.innerHTML = `<div class="p-2 text-muted small text-center">Data APBD belum tersedia.</div>`;
+                return;
+            }
+
+            const strSelectedKeys = (selectedKeys || []).map(k => String(k));
+
+            let html = '';
+            unitKeys.forEach(k => {
+                const unit = activeAPBD[k];
+                const isChecked = strSelectedKeys.includes(String(k));
+                const inputId = `chk_unit_${k}`;
+                html += `
+                    <label class="unit-checklist-item" for="${inputId}">
+                        <input type="checkbox" class="hero-unit-chk form-check-input" id="${inputId}" value="${k}" ${isChecked ? 'checked' : ''}>
+                        <span class="badge bg-light text-secondary border small">Kode: ${k}</span>
+                        <span class="small fw-semibold text-dark">${escapeHtml(unit.nama)}</span>
+                    </label>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function showHeroCardFormView(mode, card = null) {
+            const viewList = document.getElementById('heroCardViewList');
+            const viewForm = document.getElementById('formHeroCard');
+            const footerList = document.getElementById('heroModalFooterList');
+            const footerForm = document.getElementById('heroModalFooterForm');
+            const titleEl = document.getElementById('modalManageHeroTitle');
+            const subtitleEl = document.getElementById('modalManageHeroSubtitle');
+            const badgeEl = document.getElementById('heroModalHeaderBadge');
+            const iconEl = document.getElementById('heroModalHeaderIcon');
+
+            if (viewList) viewList.classList.add('d-none');
+            if (viewForm) viewForm.classList.remove('d-none');
+            if (footerList) footerList.classList.add('d-none');
+            if (footerForm) footerForm.classList.remove('d-none');
+
+            if (mode === 'create') {
+                if (titleEl) titleEl.textContent = 'Tambah Sorotan Baru';
+                if (subtitleEl) subtitleEl.textContent = 'Konfigurasi sorotan baru yang akan tampil di beranda publik';
+                if (badgeEl) badgeEl.className = 'd-grid place-items-center rounded-3 bg-success bg-opacity-10 text-success p-2';
+                if (iconEl) iconEl.className = 'fa-solid fa-plus';
+
+                document.getElementById('heroCardEditId').value = '';
+                document.getElementById('heroCardTitleInput').value = '';
+                document.getElementById('heroCardSubtitleInput').value = '';
+                document.getElementById('heroCardIconSelect').value = 'fa-building-user';
+                updateHeroCardIconPreview('fa-building-user');
+                document.getElementById('heroCardTypeSelect').value = 'units';
+                toggleHeroCardTypeView('units');
+
+                populateHeroUnitsChecklist([]);
+            } else {
+                if (titleEl) titleEl.textContent = 'Ubah Sorotan';
+                if (subtitleEl) subtitleEl.textContent = 'Sesuaikan judul, ikon, atau filter unit kerja sorotan ini';
+                if (badgeEl) badgeEl.className = 'd-grid place-items-center rounded-3 bg-success bg-opacity-10 text-success p-2';
+                if (iconEl) iconEl.className = 'fa-solid fa-pen-to-square';
+
+                document.getElementById('heroCardEditId').value = card.id;
+                document.getElementById('heroCardTitleInput').value = card.title || '';
+                document.getElementById('heroCardSubtitleInput').value = card.subtitle || '';
+                
+                let icon = card.icon || 'fa-building-user';
+                if (icon === 'fa-building-columns') icon = 'fa-chart-pie';
+                document.getElementById('heroCardIconSelect').value = icon;
+                updateHeroCardIconPreview(icon);
+
+                const type = card.type || 'units';
+                document.getElementById('heroCardTypeSelect').value = type;
+                toggleHeroCardTypeView(type);
+
+                populateHeroUnitsChecklist(card.unit_keys || []);
+            }
+        }
+
+        function openCreateHeroCardModal() {
+            showHeroCardFormView('create');
+        }
+
+        function openEditHeroCardModal(cardId) {
+            const card = adminHeroCards.find(c => c.id === cardId);
+            if (!card) return;
+            showHeroCardFormView('edit', card);
+        }
+
+        function updateHeroCardIconPreview(iconClass) {
+            const previewEl = document.getElementById('heroCardIconPreview');
+            if (previewEl) {
+                previewEl.className = `fa-solid ${iconClass} text-success`;
+            }
+        }
+
+        function toggleHeroCardTypeView(type) {
+            const box = document.getElementById('heroCardUnitsSelectionBox');
+            if (box) {
+                if (type === 'units') {
+                    box.classList.remove('d-none');
+                } else {
+                    box.classList.add('d-none');
+                }
+            }
+        }
+
+        function selectAllHeroUnits(check) {
+            const checkboxes = document.querySelectorAll('.hero-unit-chk');
+            checkboxes.forEach(cb => { cb.checked = !!check; });
+        }
+
+        function backToHeroCardsList() {
+            const viewList = document.getElementById('heroCardViewList');
+            const viewForm = document.getElementById('formHeroCard');
+            const footerList = document.getElementById('heroModalFooterList');
+            const footerForm = document.getElementById('heroModalFooterForm');
+            const titleEl = document.getElementById('modalManageHeroTitle');
+            const subtitleEl = document.getElementById('modalManageHeroSubtitle');
+            const badgeEl = document.getElementById('heroModalHeaderBadge');
+            const iconEl = document.getElementById('heroModalHeaderIcon');
+
+            if (viewForm) viewForm.classList.add('d-none');
+            if (viewList) viewList.classList.remove('d-none');
+            if (footerForm) footerForm.classList.add('d-none');
+            if (footerList) footerList.classList.remove('d-none');
+
+            if (titleEl) titleEl.textContent = 'Kelola Sorotan Beranda';
+            if (subtitleEl) subtitleEl.textContent = 'Atur menu sorotan yang tampil di beranda publik';
+            if (badgeEl) badgeEl.className = 'd-grid place-items-center rounded-3 bg-primary bg-opacity-10 text-primary p-2';
+            if (iconEl) iconEl.className = 'fa-solid fa-layer-group';
+        }
+
+        async function saveHeroCardForm(e) {
+            e.preventDefault();
+            const editId = document.getElementById('heroCardEditId').value.trim();
+            const title = document.getElementById('heroCardTitleInput').value.trim();
+            const subtitle = document.getElementById('heroCardSubtitleInput').value.trim();
+            const icon = document.getElementById('heroCardIconSelect').value;
+            const type = document.getElementById('heroCardTypeSelect').value;
+
+            if (!title) {
+                alert('Judul sorotan wajib diisi!');
+                return;
+            }
+
+            let unitKeys = [];
+            if (type === 'units') {
+                const checkedBoxes = document.querySelectorAll('.hero-unit-chk:checked');
+                checkedBoxes.forEach(cb => {
+                    unitKeys.push(cb.value);
+                });
+
+                if (unitKeys.length === 0) {
+                    alert('Harap pilih minimal 1 unit kerja untuk dimasukkan ke dalam sorotan ini!');
+                    return;
+                }
+            }
+
+            const btnSave = document.getElementById('btnSaveHeroCard');
+            const originalText = btnSave ? btnSave.innerHTML : '';
+            if (btnSave) {
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Menyimpan...';
+            }
+
+            try {
+                let cardObj = {
+                    id: editId ? editId : ('hero_' + Date.now()),
+                    title: title,
+                    subtitle: subtitle,
+                    icon: icon,
+                    type: type,
+                    target: type === 'macro' ? 'apbd' : (type === 'apbn' ? 'apbn' : ''),
+                    unit_keys: unitKeys
+                };
+
+                let updatedCards = [...adminHeroCards];
+                if (editId) {
+                    const idx = updatedCards.findIndex(c => c.id === editId);
+                    if (idx !== -1) {
+                        updatedCards[idx] = cardObj;
+                    } else {
+                        updatedCards.push(cardObj);
+                    }
+                } else {
+                    updatedCards.push(cardObj);
+                }
+
+                await saveHeroCardsListToServer(updatedCards);
+                adminHeroCards = updatedCards;
+
+                showNotification('Konfigurasi sorotan berhasil disimpan!');
+                backToHeroCardsList();
+                renderAdminHeroCardsList();
+            } catch (err) {
+                alert('Gagal menyimpan sorotan: ' + (err.message || err));
+            } finally {
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = originalText;
+                }
+            }
+        }
+
+        async function deleteHeroCard(cardId) {
+            const card = adminHeroCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            if (adminHeroCards.length <= 1) {
+                alert('Minimal harus ada 1 sorotan aktif!');
+                return;
+            }
+
+            if (!confirm(`Hapus sorotan "${card.title}"? Sorotan ini tidak akan tampil lagi di halaman beranda publik.`)) {
+                return;
+            }
+
+            try {
+                const updatedCards = adminHeroCards.filter(c => c.id !== cardId);
+                await saveHeroCardsListToServer(updatedCards);
+                adminHeroCards = updatedCards;
+                showNotification(`Sorotan "${card.title}" berhasil dihapus.`);
+                renderAdminHeroCardsList();
+            } catch (err) {
+                alert('Gagal menghapus sorotan: ' + (err.message || err));
+            }
+        }
+
+        async function moveHeroCard(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= adminHeroCards.length) return;
+
+            const updatedCards = [...adminHeroCards];
+            const temp = updatedCards[index];
+            updatedCards[index] = updatedCards[targetIndex];
+            updatedCards[targetIndex] = temp;
+
+            try {
+                await saveHeroCardsListToServer(updatedCards);
+                adminHeroCards = updatedCards;
+                renderAdminHeroCardsList();
+            } catch (err) {
+                alert('Gagal mengubah urutan sorotan: ' + (err.message || err));
+            }
+        }
+
+        async function resetHeroCardsToDefault() {
+            if (!confirm('Kembalikan sorotan ke setelan bawaan sistem (4 sorotan standar)?')) return;
+
+            const defaultCards = [
+                { id: 'hero_apbd', title: 'APBD 2022-2026', subtitle: 'Rekap Seluruh Unit', icon: 'fa-file-invoice-dollar', type: 'macro', target: 'apbd', unit_keys: [] },
+                { id: 'hero_sekretariat', title: 'Sekretariat', subtitle: 'Sekretariat Dinas', icon: 'fa-building-user', type: 'units', target: '', unit_keys: ['1'] },
+                { id: 'hero_gaji', title: 'Gaji dan Tunjangan', subtitle: 'Gaji & Tunjangan Pegawai', icon: 'fa-money-check-dollar', type: 'units', target: '', unit_keys: ['A'] },
+                { id: 'hero_apbn', title: 'APBN 2022-2026', subtitle: 'Rekap Seluruh Satker', icon: 'fa-table-list', type: 'macro', target: 'apbn', unit_keys: [] }
+            ];
+
+            try {
+                await saveHeroCardsListToServer(defaultCards);
+                adminHeroCards = defaultCards;
+                showNotification('Sorotan berhasil direset ke pengaturan default.');
+                renderAdminHeroCardsList();
+            } catch (err) {
+                alert('Gagal mereset sorotan: ' + (err.message || err));
+            }
+        }
+
+        async function saveHeroCardsListToServer(cards) {
+            if (!csrfToken) await fetchCsrfToken();
+            const res = await fetch('api/save_hero_cards.php', {
+                method: 'POST',
+                headers: buildJsonHeaders(),
+                body: JSON.stringify({ cards: cards })
+            });
+            const json = await res.json();
+            if (!res.ok || json.status !== 'success') {
+                throw new Error(json.message || 'Gagal menyimpan ke server');
+            }
+            return json;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         window.onload = function () {
+            initAdminSessionDashboard();
             initData();
-            showTabAPBD();
+            if (window.location.hash === '#apbn') {
+                showTabAPBN();
+            } else if (window.location.hash === '#hero-cards') {
+                showTabAPBD();
+                openModalManageHeroCards();
+            } else {
+                showTabAPBD();
+            }
+
+            window.addEventListener('hashchange', function () {
+                if (window.location.hash === '#apbn') {
+                    showTabAPBN();
+                } else if (window.location.hash === '#hero-cards') {
+                    openModalManageHeroCards();
+                } else {
+                    showTabAPBD();
+                }
+            });
 
             const matrixModalEl = document.getElementById('matrixModal');
             if (matrixModalEl) {
                 matrixModalEl.addEventListener('shown.bs.modal', function () {
                     if (matrixNominalChartInstance) matrixNominalChartInstance.resize();
                     if (matrixPercentChartInstance) matrixPercentChartInstance.resize();
+                });
+            }
+
+            const modalManageEl = document.getElementById('modalManageHeroCards');
+            if (modalManageEl) {
+                modalManageEl.addEventListener('hidden.bs.modal', function () {
+                    backToHeroCardsList();
                 });
             }
         };

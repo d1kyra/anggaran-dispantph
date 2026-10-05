@@ -40,8 +40,29 @@ $dataYears = is_array($input['data']) ? $input['data'] : [];
 try {
     $pdo->beginTransaction();
 
+    // Pastikan kolom show_in_hero dan icon tersedia di tabel apbd_unit
+    try {
+        $checkCols = $pdo->query("SHOW COLUMNS FROM apbd_unit LIKE 'show_in_hero'");
+        if ($checkCols->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE apbd_unit ADD COLUMN show_in_hero TINYINT(1) DEFAULT 1");
+        }
+        $checkIcon = $pdo->query("SHOW COLUMNS FROM apbd_unit LIKE 'icon'");
+        if ($checkIcon->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE apbd_unit ADD COLUMN icon VARCHAR(50) DEFAULT 'fa-building-user'");
+        }
+    } catch (Exception $eCol) {
+        // Fallback jika tidak memiliki hak alter
+    }
+
     $rawPeriode = $input['periodeCustom'] ?? ($dataYears['periodeCustom'] ?? null);
     $periode_custom = !empty($rawPeriode) ? trim(strip_tags((string) $rawPeriode)) : null;
+
+    $showInHero = isset($input['showInHero']) ? ($input['showInHero'] ? 1 : 0) : (isset($dataYears['showInHero']) ? ($dataYears['showInHero'] ? 1 : 0) : 1);
+    $rawIcon = $input['icon'] ?? ($dataYears['icon'] ?? 'fa-building-user');
+    $icon = preg_replace('/[^a-z0-9_-]/i', '', trim((string) $rawIcon));
+    if (empty($icon)) {
+        $icon = 'fa-building-user';
+    }
 
     $stmt = $pdo->prepare("SELECT kode FROM apbd_unit WHERE kode = ?");
     $stmt->execute([$kode]);
@@ -49,11 +70,11 @@ try {
         $maxUrutanStmt = $pdo->query("SELECT MAX(urutan) as max_urutan FROM apbd_unit");
         $maxUrutan = (int) $maxUrutanStmt->fetchColumn() + 1;
 
-        $insertUnit = $pdo->prepare("INSERT INTO apbd_unit (kode, nama, periode_custom, urutan) VALUES (?, ?, ?, ?)");
-        $insertUnit->execute([$kode, $nama, $periode_custom, $maxUrutan]);
+        $insertUnit = $pdo->prepare("INSERT INTO apbd_unit (kode, nama, periode_custom, urutan, show_in_hero, icon) VALUES (?, ?, ?, ?, ?, ?)");
+        $insertUnit->execute([$kode, $nama, $periode_custom, $maxUrutan, $showInHero, $icon]);
     } else {
-        $updateUnit = $pdo->prepare("UPDATE apbd_unit SET nama = ?, periode_custom = ? WHERE kode = ?");
-        $updateUnit->execute([$nama, $periode_custom, $kode]);
+        $updateUnit = $pdo->prepare("UPDATE apbd_unit SET nama = ?, periode_custom = ?, show_in_hero = ?, icon = ? WHERE kode = ?");
+        $updateUnit->execute([$nama, $periode_custom, $showInHero, $icon, $kode]);
     }
 
     foreach ($dataYears as $tahun => $data) {

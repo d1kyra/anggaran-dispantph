@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS apbd_unit (
     kode VARCHAR(20) PRIMARY KEY,
     nama VARCHAR(255) NOT NULL,
     periode_custom VARCHAR(100) DEFAULT NULL,
-    urutan INT DEFAULT 0
+    urutan INT DEFAULT 0,
+    show_in_hero TINYINT(1) DEFAULT 1,
+    icon VARCHAR(50) DEFAULT 'fa-building-user'
 );
 
 CREATE TABLE IF NOT EXISTS apbd_anggaran (
