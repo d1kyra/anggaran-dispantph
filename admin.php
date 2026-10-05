@@ -3637,9 +3637,9 @@ $lastAdminLoginTime = (string) ($lastAdminLogin['timestamp'] ?? '');
                 } else {
                     const uKeys = Array.isArray(card.unit_keys) ? card.unit_keys : [];
                     if (uKeys.length === 0) {
-                        typeBadge = `<span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 px-2 py-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Belum ada unit</span>`;
+                        typeBadge = `<span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 px-2 py-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Belum ada rincian</span>`;
                     } else {
-                        typeBadge = `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fa-solid fa-folder-tree me-1"></i> ${uKeys.length} Unit APBD</span>`;
+                        typeBadge = `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fa-solid fa-folder-tree me-1"></i> ${uKeys.length} Rincian</span>`;
                         const unitTags = uKeys.map(k => {
                             const uName = (activeAPBD && activeAPBD[k] && activeAPBD[k].nama) ? activeAPBD[k].nama : `Unit ${k}`;
                             return `<span class="hero-unit-tag" title="Kode: ${k}">${escapeHtml(uName)}</span>`;
